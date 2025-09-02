@@ -182,6 +182,22 @@ const HeroSection = () => {
           opacity: 0.3;
           animation: pulse 2s ease-in-out infinite;
         }
+        @media (max-width: 640px) {
+          #accueil {
+            min-height: 100dvh;
+            padding-top: 3.5rem;
+            padding-bottom: calc(env(safe-area-inset-bottom) + 3rem);
+            background-position: center top;
+          }
+          #accueil .floating-elements { display: none; }
+          #accueil .logo-container img { height: 6rem; }
+          #accueil p { font-size: 0.95rem; margin-bottom: 0.75rem; padding: 0 0.5rem; }
+          .typewriter-text { white-space: normal; animation: none; display: inline; width: auto; }
+          #accueil button { padding: 0.75rem 1rem; font-size: 0.95rem; border-radius: 9999px; }
+          #accueil .grid { gap: 0.75rem; margin-top: 0.75rem; margin-bottom: 1rem; }
+          #accueil .grid .text-3xl { font-size: 1.25rem; }
+          #accueil .scroll-indicator svg { width: 1.5rem; height: 1.5rem; }
+        }
       `}</style>
 
       {/* Section Hero avec fond interactif */}
