@@ -313,20 +313,19 @@ const HeroSection = () => {
   </Button>
 </div>
 
-   {/* Statistiques animées */}
-  <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-6 mb-12 animate-fade-in-up delay-1000">
+  {/* Statistiques animées */}
+  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6 mb-12 animate-fade-in-up delay-1000 px-4">
     {[
-      { number: "+50", label: "Projets réalisés" },
-      { number: "+5", label: "Années d'expérience" },
-      { number: "98%", label: "Clients satisfaits" },
-      { number: "24/7", label: "Support client" }
+      { number: "+20", label: "Projets réalisés" },
+      { number: "95%", label: "Clients satisfaits" },
+      { number: "7/7", label: "Support client" }
     ].map((stat, index) => (
       <div
         key={index}
         className="text-center group cursor-pointer"
         style={{ animationDelay: `${1200 + index * 100}ms` }}
       >
-        <div className="text-3xl md:text-4xl font-bold text-orange-400 mb-2 group-hover:scale-110 transition-transform duration-300">
+        <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-orange-400 mb-2 group-hover:scale-110 transition-transform duration-300">
           {stat.number}
         </div>
         <p className="text-gray-300 text-sm uppercase tracking-wider">{stat.label}</p>
