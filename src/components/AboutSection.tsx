@@ -178,7 +178,7 @@ const AboutSection = () => {
                       <Code className="w-6 h-6 mr-2" />
                       Nos Expertises
                     </h3>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2  gap-3">
                       {[
                         { icon: <Code className="w-4 h-4 text-orange-500" />, label: "Développement" },
                         { icon: <Palette className="w-4 h-4 text-orange-500" />, label: "Design UI/UX" },
