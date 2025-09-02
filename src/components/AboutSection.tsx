@@ -4,7 +4,7 @@ import { Users, Target, Heart, Award, Code, Palette, Rocket, Shield, ArrowRight 
 // Mock Button component
 const Button = ({ children, className, ...props }) => {
   return (
-    <button 
+    <button
       className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${className}`}
       {...props}
     >
@@ -30,7 +30,7 @@ const AboutSection = () => {
   useEffect(() => {
     if (videoRef.current) {
       const playPromise = videoRef.current.play();
-      
+
       if (playPromise !== undefined) {
         playPromise.catch(error => {
           videoRef.current.muted = true;
@@ -109,7 +109,7 @@ const AboutSection = () => {
           <source src={backgroundVideo} type="video/mp4" />
           Votre navigateur ne supporte pas les vidéos HTML5.
         </video>
-        
+
         {/* Overlay pour assurer la lisibilité du contenu */}
         <div className="video-overlay"></div>
 
@@ -123,160 +123,147 @@ const AboutSection = () => {
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-6xl mx-auto">
             {/* Titre principal */}
-           
+
 
             {/* Section Mission, Vision, Valeurs - Tout en haut */}
-            
-          {/* Contenu secondaire */}
-          <div className="relative rounded-2xl p-8 shadow-lg overflow-hidden">
-            {/* Nouvelle vidéo de fond pour cette section */}
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="absolute inset-0 w-full h-full object-cover z-0"
-            >
-              <source src="/videos/planet.mp4" type="video/mp4" />
-              Votre navigateur ne supporte pas les vidéos HTML5.
-            </video>
-            
-            {/* Overlay semi-transparent pour améliorer la lisibilité */}
-            <div className="absolute inset-0 bg-black/30 z-1"></div>
-            
-            {/* Contenu avec position relative pour apparaître au-dessus */}
-            <div className="relative z-10">
-              {/* Section principale avec contenu et statistiques */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start mb-16">
-                {/* Colonne de gauche - Statistiques et Expertises */}
-                <div className="space-y-6">
-                  {/* Grille de statistiques compacte */}
-                  <div className="grid grid-cols-2 gap-4">
-                    {[
-                      { value: "50+", label: "Projets réalisés" },
-                      { value: "5+", label: "Années d'expérience" },
-                      { value: "98%", label: "Clients satisfaits" },
-                      { value: "24/7", label: "Support client" }
-                    ].map((stat, index) => (
-                      <div 
-                        key={index}
-                        className="gradient-border group cursor-pointer hover:shadow-md transition-all duration-300"
-                      >
-                        <div className="gradient-border-inner p-4 text-center h-full bg-white/90 backdrop-blur-sm">
-                          <div className="text-3xl font-bold text-orange-500 mb-1 group-hover:scale-105 transition-transform duration-300">
-                            {stat.value}
+
+            {/* Contenu secondaire */}
+            <div className="relative rounded-2xl p-8 shadow-lg overflow-hidden">
+              {/* Nouvelle vidéo de fond pour cette section */}
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover z-0"
+              >
+                <source src="/videos/planet.mp4" type="video/mp4" />
+                Votre navigateur ne supporte pas les vidéos HTML5.
+              </video>
+
+              {/* Overlay semi-transparent pour améliorer la lisibilité */}
+              <div className="absolute inset-0 bg-black/30 z-1"></div>
+
+              {/* Contenu avec position relative pour apparaître au-dessus */}
+              <div className="relative z-10">
+                {/* Section principale avec contenu et statistiques */}
+                <div className="grid grid-cols-1 w-full gap-6 ">
+                  <h2 className="text-4xl md:text-5xl text-center font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600 mb-6">
+                    A Propos 
+                  </h2>
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start mb-16">
+                  {/* Colonne de gauche - Statistiques et Expertises */}
+                  <div className="space-y-6">
+                    {/* Grille de statistiques compacte */}
+
+
+
+                    {/* Bloc Expertises compact */}
+                    <div className="bg-white/90 backdrop-blur-sm p-6 grid grid-cols-1 sm:grid-col-2 group-odd: rounded-xl shadow-lg">
+                      <h3 className="text-xl font-bold text-orange-500 mb-4 flex items-center">
+                        <Code className="w-6 h-6 mr-2" />
+                        Nos Expertises
+                      </h3>
+                      <div className="grid grid-cols-1 sm:grid-cols-2  gap-3">
+                        {[
+                          { icon: <Code className="w-4 h-4 text-orange-500" />, label: "Développement" },
+                          { icon: <Palette className="w-4 h-4 text-orange-500" />, label: "Design UI/UX" },
+                          { icon: <Rocket className="w-4 h-4 text-orange-500" />, label: "Marketing Digital" },
+                          { icon: <Shield className="w-4 h-4 text-orange-500" />, label: "Maintenance" }
+                        ].map((service, i) => (
+                          <div
+                            key={i}
+                            className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100/50 transition-colors duration-200"
+                          >
+                            <div className="w-8 h-8 bg-orange-500/10 rounded-lg flex items-center justify-center">
+                              {service.icon}
+                            </div>
+                            <span className="text-gray-700 text-sm">{service.label}</span>
                           </div>
-                          <p className="text-gray-700 text-xs md:text-sm">{stat.label}</p>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Colonne de droite - Équipe et CTA */}
+                  <div className="space-y-6">
+                    {/* Bloc Équipe avec style brique */}
+                    <div className="bg-white/90 backdrop-blur-sm p-6 rounded-xl shadow-lg relative overflow-hidden min-h-[250px]">
+                      <div className="absolute inset-0 bg-cover bg-center opacity-20 z-0"
+                        style={{ backgroundImage: "url('brick-pattern.png')" }}></div>
+
+                      <div className="relative z-10">
+                        <div className="flex items-start mb-4">
+                          <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full flex items-center justify-center mr-3">
+                            <Users className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-bold text-orange-500">Notre Équipe</h3>
+                            <p className="text-gray-600 text-xs">Professionnels dédiés à votre succès</p>
+                          </div>
                         </div>
+
+                        {/* Avatar team horizontaux */}
+
+                        <div className="space-y-3">
+                          <p className="text-gray-700 text-sm leading-relaxed">
+                            Notre équipe multidisciplinaire réunit des experts passionnés : développeurs full-stack,
+                            designers UI/UX et consultants en stratégie digitale.
+                          </p>
+                          <p className="text-gray-700 text-sm leading-relaxed">
+                            Ensemble, nous formons une équipe soudée déterminée à repousser les limites
+                            du possible pour vos projets.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* CTA élargi */}
+                    <div className="text-center">
+                      <div className="relative inline-block group w-full max-w-md mx-auto">
+                        <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-300"></div>
+                        <Button
+                          className="relative bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 text-base w-full transition-all duration-300 group-hover:scale-[1.02]"
+                          style={{ boxShadow: "0 4px 14px rgba(234, 88, 12, 0.3)" }}
+                        >
+                          Parlons de votre projet
+                          <ArrowRight className="w-4 h-4 ml-2 inline" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section processus avec timeline */}
+                <div className="bg-white/90 backdrop-blur-sm p-12 rounded-2xl shadow-lg">
+                  <h3 className="text-3xl font-bold text-orange-500 text-center mb-12">Notre Processus</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    {[
+                      { image: process1, title: "Écoute", desc: "Analyse de vos besoins" },
+                      { image: process2, title: "Création", desc: "Design & développement" },
+                      { image: process3, title: "Lancement", desc: "Mise en production" },
+                      { image: process4, title: "Support", desc: "Maintenance & évolution" }
+                    ].map((step, index) => (
+                      <div key={index} className="text-center group">
+                        <div className="relative mb-6">
+                          <div className="w-20 h-20 mx-auto group-hover:scale-110 transition-transform duration-300">
+                            <img
+                              src={step.image}
+                              alt={step.title}
+                              className="process-image w-full h-full object-cover"
+                            />
+                          </div>
+                          <div className="absolute -top-2 -right-2 w-6 h-6 bg-orange-400 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                            {index + 1}
+                          </div>
+                        </div>
+                        <h4 className="text-xl font-bold text-black mb-2">{step.title}</h4>
+                        <p className="text-gray-600">{step.desc}</p>
                       </div>
                     ))}
                   </div>
-
-                  {/* Bloc Expertises compact */}
-                  <div className="bg-white/90 backdrop-blur-sm p-6 rounded-xl shadow-lg">
-                    <h3 className="text-xl font-bold text-orange-500 mb-4 flex items-center">
-                      <Code className="w-6 h-6 mr-2" />
-                      Nos Expertises
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2  gap-3">
-                      {[
-                        { icon: <Code className="w-4 h-4 text-orange-500" />, label: "Développement" },
-                        { icon: <Palette className="w-4 h-4 text-orange-500" />, label: "Design UI/UX" },
-                        { icon: <Rocket className="w-4 h-4 text-orange-500" />, label: "Marketing Digital" },
-                        { icon: <Shield className="w-4 h-4 text-orange-500" />, label: "Maintenance" }
-                      ].map((service, i) => (
-                        <div 
-                          key={i}
-                          className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100/50 transition-colors duration-200"
-                        >
-                          <div className="w-8 h-8 bg-orange-500/10 rounded-lg flex items-center justify-center">
-                            {service.icon}
-                          </div>
-                          <span className="text-gray-700 text-sm">{service.label}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
                 </div>
-
-                {/* Colonne de droite - Équipe et CTA */}
-                <div className="space-y-6">
-                  {/* Bloc Équipe avec style brique */}
-                  <div className="bg-white/90 backdrop-blur-sm p-6 rounded-xl shadow-lg relative overflow-hidden min-h-[250px]">
-                    <div className="absolute inset-0 bg-cover bg-center opacity-20 z-0" 
-                        style={{ backgroundImage: "url('brick-pattern.png')" }}></div>
-                    
-                    <div className="relative z-10">
-                      <div className="flex items-start mb-4">
-                        <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full flex items-center justify-center mr-3">
-                          <Users className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold text-orange-500">Notre Équipe</h3>
-                          <p className="text-gray-600 text-xs">Professionnels dédiés à votre succès</p>
-                        </div>
-                      </div>
-                      
-                      {/* Avatar team horizontaux */}
-                      
-                      <div className="space-y-3">
-                        <p className="text-gray-700 text-sm leading-relaxed">
-                          Notre équipe multidisciplinaire réunit des experts passionnés : développeurs full-stack, 
-                          designers UI/UX et consultants en stratégie digitale.
-                        </p>
-                        <p className="text-gray-700 text-sm leading-relaxed">
-                          Ensemble, nous formons une équipe soudée déterminée à repousser les limites 
-                          du possible pour vos projets.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* CTA élargi */}
-                  <div className="text-center">
-                    <div className="relative inline-block group w-full max-w-md mx-auto">
-                      <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg blur opacity-25 group-hover:opacity-75 transition duration-300"></div>
-                      <Button 
-                        className="relative bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 text-base w-full transition-all duration-300 group-hover:scale-[1.02]"
-                        style={{ boxShadow: "0 4px 14px rgba(234, 88, 12, 0.3)" }}
-                      >
-                        Parlons de votre projet
-                        <ArrowRight className="w-4 h-4 ml-2 inline" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Section processus avec timeline */}
-              <div className="bg-white/90 backdrop-blur-sm p-12 rounded-2xl shadow-lg">
-                <h3 className="text-3xl font-bold text-orange-500 text-center mb-12">Notre Processus</h3>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                  {[
-                    { image: process1, title: "Écoute", desc: "Analyse de vos besoins" },
-                    { image: process2, title: "Création", desc: "Design & développement" },
-                    { image: process3, title: "Lancement", desc: "Mise en production" },
-                    { image: process4, title: "Support", desc: "Maintenance & évolution" }
-                  ].map((step, index) => (
-                    <div key={index} className="text-center group">
-                      <div className="relative mb-6">
-                        <div className="w-20 h-20 mx-auto group-hover:scale-110 transition-transform duration-300">
-                          <img 
-                            src={step.image} 
-                            alt={step.title}
-                            className="process-image w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-orange-400 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                          {index + 1}
-                        </div>
-                      </div>
-                      <h4 className="text-xl font-bold text-black mb-2">{step.title}</h4>
-                      <p className="text-gray-600">{step.desc}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
               </div>
             </div>
           </div>
