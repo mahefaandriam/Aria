@@ -22,7 +22,7 @@ const Header = () => {
         "accueil",
         "realisations",
         "services",
-        "apropos",
+        "about",
         "contact",
       ];
       const current = sections.find((section) => {
