@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 195 100% 8%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 195 100% 8%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 195 100% 8%;
+
+    /* Aria brand colors inspired by the sunset logo */
+    --primary: 195 100% 8%; /* Deep teal from logo */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 35 100% 85%; /* Warm cream/sand */
+    --secondary-foreground: 195 100% 8%;
+
+    --accent: 25 85% 55%; /* Sunset orange */
+    --accent-foreground: 0 0% 100%;
+
+    --muted: 35 100% 95%;
+    --muted-foreground: 195 50% 25%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 35 50% 90%;
+    --input: 35 50% 95%;
+    --ring: 25 85% 55%;
+
+    /* Custom Aria design tokens */
+    --aria-sunset: 25 85% 55%;
+    --aria-gold: 45 90% 65%;
+    --aria-teal: 195 100% 8%;
+    --aria-cream: 35 100% 95%;
+    
+    /* Gradients */
+    --gradient-sunset: linear-gradient(135deg, hsl(25 85% 55%), hsl(45 90% 65%));
+    --gradient-hero: linear-gradient(135deg, hsl(195 100% 8%), hsl(195 80% 15%));
+    
+    /* Shadows */
+    --shadow-elegant: 0 10px 30px -10px hsl(195 100% 8% / 0.2);
+    --shadow-card: 0 4px 20px hsl(25 85% 55% / 0.1);
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
