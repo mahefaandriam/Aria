@@ -123,82 +123,10 @@ const AboutSection = () => {
         <div className="container mx-auto px-6 relative z-10">
           <div className="max-w-6xl mx-auto">
             {/* Titre principal */}
-            <h2 className="text-4xl md:text-5xl font-bold text-orange-500 text-center mb-16 animate-fadeIn">
-              Notre Approche
-            </h2>
+           
 
             {/* Section Mission, Vision, Valeurs - Tout en haut */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-20">
-              {/* Mission */}
-              <div className="relative group overflow-hidden rounded-2xl shadow-xl min-h-[400px] hover:shadow-2xl transition-all duration-500">
-                <div 
-                  className="absolute inset-0 bg-cover bg-center z-0 transition-transform duration-700 group-hover:scale-110"
-                  style={{ 
-                    backgroundImage: `url(${missionImage})`,
-                    backgroundPosition: 'center center'
-                  }}
-                />
-                <div className="absolute bottom-0 left-0 right-0 z-10 p-5 bg-gradient-to-t from-gray-900/90 via-gray-900/70 to-transparent h-1/3">
-                  <div className="flex flex-col h-full justify-end">
-                    <div className="w-10 h-10 bg-white rounded-md flex items-center justify-center mb-2 ml-auto group-hover:rotate-12 transition-transform duration-300">
-                      <Target className="w-5 h-5 text-orange-600" />
-                    </div>
-                    <h3 className="text-xl font-bold text-white mb-1">Mission</h3>
-                    <p className="text-white/90 text-sm leading-tight">
-                    Chez ARIA, nous croyons que chaque entreprise mérite une présence digitale qui reflète son unicité. Notre mission est d'accompagner nos clients dans leur transformation numérique en créant des solutions innovantes, performantes et sur mesure qui génèrent un impact réel sur leur croissance
-
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Vision */}
-              <div className="relative group overflow-hidden rounded-2xl shadow-xl min-h-[400px] hover:shadow-2xl transition-all duration-500">
-                <div 
-                  className="absolute inset-0 bg-cover bg-center z-0 transition-transform duration-700 group-hover:scale-110"
-                  style={{ 
-                    backgroundImage: `url(${visionImage})`,
-                    backgroundPosition: 'center center'
-                  }}
-                />
-                <div className="absolute bottom-0 left-0 right-0 z-10 p-5 bg-gradient-to-t from-gray-900/90 via-gray-900/70 to-transparent h-1/3">
-                  <div className="flex flex-col h-full justify-end">
-                    <div className="w-10 h-10 bg-white rounded-md flex items-center justify-center mb-2 ml-auto group-hover:rotate-12 transition-transform duration-300">
-                      <Award className="w-5 h-5 text-orange-600" />
-                    </div>
-                    <h3 className="text-xl font-bold text-white mb-1">Vision</h3>
-                    <p className="text-white/90 text-sm leading-tight">
-                    Être le partenaire privilégié des entreprises ambitieuses qui souhaitent exploiter pleinement le potentiel du digital. Nous aspirons à créer des expériences numériques exceptionnelles qui connectent véritablement les marques à leur audience
-
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Valeurs */}
-              <div className="relative group overflow-hidden rounded-2xl shadow-xl min-h-[400px] hover:shadow-2xl transition-all duration-500">
-                <div 
-                  className="absolute inset-0 bg-cover bg-center z-0 transition-transform duration-700 group-hover:scale-110"
-                  style={{ 
-                    backgroundImage: `url(${valuesImage})`,
-                    backgroundPosition: 'center center'
-                  }}
-                />
-                <div className="absolute bottom-0 left-0 right-0 z-10 p-5 bg-gradient-to-t from-gray-900/90 via-gray-900/70 to-transparent h-1/3">
-                  <div className="flex flex-col h-full justify-end">
-                    <div className="w-10 h-10 bg-white rounded-md flex items-center justify-center mb-2 ml-auto group-hover:rotate-12 transition-transform duration-300">
-                      <Heart className="w-5 h-5 text-orange-600" />
-                    </div>
-                    <h3 className="text-xl font-bold text-white mb-1">Valeurs</h3>
-                    <p className="text-white/90 text-sm leading-tight">
-                     L'excellence technique, la créativité sans limites, et l'écoute attentive de nos clients sont au cœur de tout ce que nous faisons. Nous privilégions la transparence, l'innovation et la collaboration pour créer des partenariats durables et fructueux
-
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+            
           {/* Contenu secondaire */}
           <div className="relative rounded-2xl p-8 shadow-lg overflow-hidden">
             {/* Nouvelle vidéo de fond pour cette section */}
@@ -290,24 +218,6 @@ const AboutSection = () => {
                       </div>
                       
                       {/* Avatar team horizontaux */}
-                      <div className="flex justify-start mb-4 overflow-x-auto pb-2">
-                        <div className="flex space-x-3">
-                          {[
-                            'https://randomuser.me/api/portraits/men/32.jpg',     // Homme
-                        'https://randomuser.me/api/portraits/women/45.jpg',   // Femme
-                        'https://randomuser.me/api/portraits/men/76.jpg',     // Homme
-                        'https://randomuser.me/api/portraits/women/68.jpg',   // Femme
-                        'https://randomuser.me/api/portraits/men/21.jpg'      // Homme
-                          ].map((url, i) => (
-                            <div 
-                              key={i}
-                              className="w-10 h-10 bg-white rounded-full border-2 border-orange-400 flex items-center justify-center hover:scale-110 transition-transform duration-200 shadow-sm overflow-hidden"
-                            >
-                              <img src={url} alt={`Avatar ${i + 1}`} className="w-full h-full object-cover" />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
                       
                       <div className="space-y-3">
                         <p className="text-gray-700 text-sm leading-relaxed">
