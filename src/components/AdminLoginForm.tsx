@@ -63,7 +63,7 @@ const AdminLoginForm = () => {
           <div className="text-center mb-4 animate-fadeInDown">
             <div className="inline-flex items-center justify-center w-30 h-30 bg-gradient-to-br from-orange- to-orange-4 rounded-full mb-4 shadow-xl shadow-orange-500/40 ring-2 ring-orange-300">
               <img
-                src="./src/assets/aria-logo.png"
+                src="/images/aria-logo.png"
                 alt="Logo Aria"
                 className="w-28 h-28 object-contain"
               />
