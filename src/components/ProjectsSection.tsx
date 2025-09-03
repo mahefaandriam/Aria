@@ -39,8 +39,8 @@ const ProjectsSection = () => {
 
     loadProjects();
 
-    // Recharger les projets toutes les 30 secondes pour sync avec l'API
-    const interval = setInterval(loadProjects, 30000);
+    // Recharger les projets toutes les 300 secondes pour sync avec l'API
+    const interval = setInterval(loadProjects, 300000);
 
     return () => clearInterval(interval);
   }, []);
