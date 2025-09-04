@@ -248,20 +248,23 @@ const AboutSection = () => {
                       { image: process5, title: "Conseils", desc: "Accompagnement & recommandations personnalisées" }
                     ].map((step, index) => (
                       <div key={index} className="text-center group">
-                      <div className="relative mb-6 ">
-                        <div className="flex jusify-center items-center w-25 h-25 mx-auto group-hover:scale-110 transition-transform duration-300">
-                        <img
-                          src={step.image}
-                          alt={step.title}
-                          className="process-image w-full h-full object-cover"
-                        />
+                        <div className="flex items-center justify-center overflow-hidden">
+                          <div className="relative">
+                            <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-orange-400">
+                              <img
+                                src={step.image}
+                                alt={step.title}
+                                className="relative h-full object-conver object-top hover:scale-105 transition-all duration-500"
+                              />
+                              
+                            </div>
+                            <div className="absolute w-6 h-6 right-6 top-1 bg-orange-400 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                                {index + 1}
+                              </div>  
+                          </div>                        
                         </div>
-                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-orange-400 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                        {index + 1}
-                        </div>
-                      </div>
-                      <h4 className="text-xl font-bold text-black mb-2">{step.title}</h4>
-                      <p className="text-gray-600">{step.desc}</p>
+                        <h4 className="text-xl font-bold text-black mb-2">{step.title}</h4>
+                        <p className="text-gray-600">{step.desc}</p>
                       </div>
                     ))}
                   </div>
