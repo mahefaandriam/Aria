@@ -316,7 +316,7 @@ const HeroSection = () => {
   {/* Statistiques animées */}
   <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-6 mb-12 animate-fade-in-up delay-1000 px-4">
     {[
-      { number: "+20", label: "Projets réalisés" },
+      { number: "+40", label: "Projets réalisés" },
       { number: "95%", label: "Clients satisfaits" },
       { number: "7/7", label: "Support client" }
     ].map((stat, index) => (
