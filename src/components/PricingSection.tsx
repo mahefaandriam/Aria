@@ -47,7 +47,7 @@ const PricingSection: React.FC = () => {
                         <PriceCard
                             title="Pack Essentiel"
                             price="500 000 Ar"
-                            services={["3 à 4 (Accueil, Services, À propos, Contact", 
+                            services={["3 à 4 (Accueil, Services, À propos, Contact)", 
                                     "Design responsive (PC + mobile)",
                                     "Formulaire de contact",
                                     "Livraison en 7 jours ouvrables"
