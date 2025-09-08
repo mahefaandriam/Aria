@@ -6,6 +6,7 @@ import ProjectsSection from "@/components/ProjectsSection";
 import ApproachSection from "@/components/ApproachSection";
 import ContactSection from "@/components/ContactSection";
 import "@/styles/animations.css";
+import PricingSection from "@/components/PricingSection";
 
 const Index = () => {
   return (
@@ -25,6 +26,7 @@ const Index = () => {
         <ProjectsSection />
         <ApproachSection />
         <ContactSection />
+        <PricingSection />
         <Footer />
       </div>
     </div>
