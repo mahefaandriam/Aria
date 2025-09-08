@@ -222,7 +222,7 @@ const Header = () => {
                 { href: "#about", label: "À Propos", icon: "" },
                 { href: "#realisations", label: "Nos Réalisations", icon: "" },
                 { href: "#services", label: "Nos Services", icon: "" },
-                { href: "#contact", label: "Nos Contact", icon: "" },
+                { href: "#contact", label: "Nos Contacts", icon: "" },
               ].map((item, index) => (
                 <a
                   key={item.href}
