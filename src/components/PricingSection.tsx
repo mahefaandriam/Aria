@@ -168,20 +168,45 @@ const ContactFormModal: React.FC<{ open: boolean; onClose: () => void; pack?: st
 
             {/* Pack */}
             <div className={`transform transition-all duration-500 ${
-                visibleItems.has(3) ? 'animate-fade-in-left' : 'opacity-0 translate-x-4'
+                visibleItems.has(2) ? 'animate-fade-in-left' : 'opacity-0 translate-x-4'
             }`}>
-                <label className="block text-orange-300 font-medium mb-2">Votre pack</label>
+                <label className="block text-orange-300 font-medium mb-2">Entreprise</label>
                 <div className="relative">
                 <input
                     type="text"
+                    name="company"
+                    value={formData.company}
+                    onChange={handleInputChange}
+                    onFocus={() => setFocusedField('company')}
+                    onBlur={() => setFocusedField(null)}
+                    className="w-full p-4 bg-black/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-gray-400 transition-all duration-300"
+                    placeholder="Nom de votre entreprise"
+                />
+                <div className={`absolute inset-0 rounded-xl bg-gradient-to-r from-orange-500/20 to-orange-600/20 opacity-0 transition-opacity duration-300 pointer-events-none ${
+                    focusedField === 'company' ? 'opacity-100' : ''
+                }`} />
+                </div>
+            </div>
+
+            {/* Sujet */}
+            <div className={`transform transition-all duration-500 ${
+                visibleItems.has(3) ? 'animate-fade-in-right' : 'opacity-0 translate-x-4'
+            }`}>
+                <label className="block text-orange-300 font-medium mb-2">Type de projet</label>
+                <div className="relative">
+                <select
                     name="subject"
-                    value={pack || formData.subject }
+                    value={formData.subject}
                     onChange={handleInputChange}
                     onFocus={() => setFocusedField('subject')}
                     onBlur={() => setFocusedField(null)}
-                    className="w-full p-4 bg-black/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white placeholder-gray-400 transition-all duration-300 disabled"
-                    placeholder="Type de pack (ex: Pack Pro)"
-                />
+                    className="w-full p-4 bg-black/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-white transition-all duration-300"
+                >
+                    <option value="">Sélectionnez un pack</option>
+                    <option value="Pack Essentiel">Pack Essentiel</option>
+                    <option value="Pack Pro">Pack Pro</option>
+                    <option value="Pack Premium">Pack Premium</option>
+                </select>
                 <div className={`absolute inset-0 rounded-xl bg-gradient-to-r from-orange-500/20 to-orange-600/20 opacity-0 transition-opacity duration-300 pointer-events-none ${
                     focusedField === 'subject' ? 'opacity-100' : ''
                 }`} />
