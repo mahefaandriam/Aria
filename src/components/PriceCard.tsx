@@ -8,6 +8,7 @@ interface PriceCardProps {
     title: string;
     price: string;
     services: string[];
+    onChoose?: () => void; // Add this prop
 }
 
 const checkIcon = (
@@ -17,7 +18,7 @@ const checkIcon = (
     </span>
 );
 
-const PriceCard: React.FC<PriceCardProps> = ({ title, price, services }) => {
+const PriceCard: React.FC<PriceCardProps> = ({ title, price, services, onChoose }) => {
 
     const [isHovered, setIsHovered] = useState(false);
     const { elementRef, isVisible } = useScrollAnimation({ threshold: 0.2 });
@@ -25,9 +26,8 @@ const PriceCard: React.FC<PriceCardProps> = ({ title, price, services }) => {
     return (
         <div
         ref={elementRef}
-        className={`transform transition-all duration-700 ${
-            isVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-10'
-        }`}
+
+        
         >
             <Card
                 className="group relative overflow-hidden bg-gradient-to-br from-gray-900 to-black border border-orange-500/20 hover:border-orange-500/60 transition-all duration-500 hover-lift cursor-pointer"
@@ -54,6 +54,7 @@ const PriceCard: React.FC<PriceCardProps> = ({ title, price, services }) => {
                     <Button
                           className="relative bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 text-base w-full transition-all duration-300 group-hover:scale-[1.02]"
                           style={{ boxShadow: "0 4px 14px rgba(234, 88, 12, 0.3)" }}
+                          onClick={onChoose} // Add this
                         >
                         Choisir ce pack
                     </Button>
