@@ -18,9 +18,6 @@ const ContactFormModal: React.FC<{ open: boolean; onClose: () => void; pack?: st
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
-  const { elementRef, isVisible } = useScrollAnimation({ threshold: 0.1 });
-  const { containerRef, visibleItems } = useStaggeredAnimation<HTMLFormElement>(6, 150);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -79,24 +76,19 @@ const ContactFormModal: React.FC<{ open: boolean; onClose: () => void; pack?: st
   if (!open) return null;
 
   return (
-    <div 
-        ref={elementRef}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
         <div
         className={`relative bg-gradient-to-br from-gray-900/50 to-black/50 backdrop-blur-xl p-8 rounded-2xl border border-orange-500/30 shadow-2xl transition-all duration-700 ${
-            isVisible ? 'animate-fade-in-up' : 'opacity-0 translate-y-10'
+            true ? 'animate-fade-in-up' : 'opacity-0 translate-y-10'
         }`}
         >
         {/* Effet de lueur de fond */}
         <div className="absolute inset-0 bg-gradient-to-r from-orange-500/5 to-orange-600/5 rounded-2xl" />
 
-        <form onSubmit={handleSubmit} ref={containerRef} className="relative z-10">
+        <form onSubmit={handleSubmit} className="relative z-10">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Nom */}
-            <div className={`transform transition-all duration-500 ${
-                visibleItems.has(0) ? 'animate-fade-in-left' : 'opacity-0 translate-x-4'
-            }`}>
+            <div className={`transform transition-all duration-500 animate-fade-in-left`}>
                 <label className="block text-orange-300 font-medium mb-2 flex items-center">
                 <span>Nom complet</span>
                 <span className="text-red-400 ml-1">*</span>
@@ -120,9 +112,7 @@ const ContactFormModal: React.FC<{ open: boolean; onClose: () => void; pack?: st
             </div>
 
             {/* Email */}
-            <div className={`transform transition-all duration-500 ${
-                visibleItems.has(1) ? 'animate-fade-in-right' : 'opacity-0 translate-x-4'
-            }`}>
+            <div className={`transform transition-all duration-500 animate-fade-in-left`}>
                 <label className="block text-orange-300 font-medium mb-2 flex items-center">
                 <Mail className="w-4 h-4 mr-2" />
                 <span>Email</span>
@@ -147,9 +137,7 @@ const ContactFormModal: React.FC<{ open: boolean; onClose: () => void; pack?: st
             </div>
 
             {/* Entreprise */}
-            <div className={`transform transition-all duration-500 ${
-                visibleItems.has(2) ? 'animate-fade-in-left' : 'opacity-0 translate-x-4'
-            }`}>
+            <div className={`transform transition-all duration-500 animate-fade-in-left`}>
                 <label className="block text-orange-300 font-medium mb-2">Entreprise</label>
                 <div className="relative">
                 <input
@@ -169,9 +157,7 @@ const ContactFormModal: React.FC<{ open: boolean; onClose: () => void; pack?: st
             </div>
 
             {/* Pack */}
-            <div className={`transform transition-all duration-500 ${
-                visibleItems.has(3) ? 'animate-fade-in-left' : 'opacity-0 translate-x-4'
-            }`}>
+            <div className={`transform transition-all duration-500 animate-fade-in-left`}>
                 <label className="block text-orange-300 font-medium mb-2">Votre pack</label>
                 <div className="relative">
                 <input
@@ -191,9 +177,7 @@ const ContactFormModal: React.FC<{ open: boolean; onClose: () => void; pack?: st
             </div>
 
             {/* Message */}
-            <div className={`md:col-span-2 transform transition-all duration-500 ${
-                visibleItems.has(4) ? 'animate-fade-in-up' : 'opacity-0 translate-y-4'
-            }`}>
+            <div className={`md:col-span-2 transform transition-all duration-500 animate-fade-in-up`}>
                 <label className="block text-orange-300 font-medium mb-2 flex items-center">
                 <span>Décrivez votre projet</span>
                 <span className="text-red-400 ml-1">*</span>
@@ -219,14 +203,12 @@ const ContactFormModal: React.FC<{ open: boolean; onClose: () => void; pack?: st
             {/* Affichage d'erreur */}
             {submitError && (
                 <div className="md:col-span-2 bg-gradient-to-br from-red-500/10 to-red-600/10 p-4 rounded-xl border border-red-500/30 text-center animate-scale-in">
-                <p className="text-red-400 font-medium">❌ {submitError}</p>
+                <p className="text-red-400 font-medium">❌ Il y a eu une erreur lors de la tentative de connexion. Veuillez réessayer ou nous contacter par e-mail.</p>
                 </div>
             )}
 
             {/* Bouton d'envoi */}
-            <div className={`flex space-x-3 md:col-span-2 transform transition-all duration-500 ${
-                visibleItems.has(5) ? 'animate-fade-in-up' : 'opacity-0 translate-y-4'
-            }`}>
+            <div className={`flex space-x-3 md:col-span-2 transform transition-all duration-500 $animate-fade-in-up`}>
                 <button
                 type="submit"
                 disabled={isSubmitting}
