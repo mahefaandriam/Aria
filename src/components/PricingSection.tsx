@@ -203,7 +203,7 @@ const ContactFormModal: React.FC<{ open: boolean; onClose: () => void; pack?: st
             {/* Affichage d'erreur */}
             {submitError && (
                 <div className="md:col-span-2 bg-gradient-to-br from-red-500/10 to-red-600/10 p-4 rounded-xl border border-red-500/30 text-center animate-scale-in">
-                <p className="text-red-400 font-medium">❌ Il y a eu une erreur lors de la tentative de connexion. Veuillez réessayer ou nous contacter par e-mail.</p>
+                <p className="text-red-400 font-medium">❌ Erreur de réseau. Si l'erreur persiste, veuillez réessayer ou nous contacter par e-mail.</p>
                 </div>
             )}
 
