@@ -21,6 +21,7 @@ const process1 = "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?i
 const process2 = "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80";
 const process3 = "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80";
 const process4 = "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80";
+const process5 = "/images/process-4.jpg"; // Local image
 const backgroundVideo = "/videos/2715412-uhd_3840_2160_30fps.mp4";
 
 const AboutSection = () => {
@@ -238,25 +239,29 @@ const AboutSection = () => {
                 {/* Section processus avec timeline */}
                 <div className="bg-white/90 backdrop-blur-sm p-12 rounded-2xl shadow-lg">
                   <h3 className="text-3xl font-bold text-orange-500 text-center mb-12">Notre Processus</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {[
                       { image: process1, title: "Écoute", desc: "Analyse de vos besoins" },
                       { image: process2, title: "Création", desc: "Design & développement" },
                       { image: process3, title: "Lancement", desc: "Mise en production" },
-                      { image: process4, title: "Support", desc: "Maintenance & évolution" }
+                      { image: process4, title: "Supports", desc: "Maintenance & évolution" },
+                      { image: process5, title: "Conseils", desc: "Accompagnement & recommandations personnalisées" }
                     ].map((step, index) => (
                       <div key={index} className="text-center group">
-                        <div className="relative mb-6">
-                          <div className="w-20 h-20 mx-auto group-hover:scale-110 transition-transform duration-300">
-                            <img
-                              src={step.image}
-                              alt={step.title}
-                              className="process-image w-full h-full object-cover"
-                            />
-                          </div>
-                          <div className="absolute -top-2 -right-2 w-6 h-6 bg-orange-400 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                            {index + 1}
-                          </div>
+                        <div className="flex items-center justify-center overflow-hidden">
+                          <div className="relative">
+                            <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-orange-400">
+                              <img
+                                src={step.image}
+                                alt={step.title}
+                                className="relative h-full object-conver object-top hover:scale-105 transition-all duration-500"
+                              />
+                              
+                            </div>
+                            <div className="absolute w-6 h-6 right-6 top-1 bg-orange-400 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                                {index + 1}
+                              </div>  
+                          </div>                        
                         </div>
                         <h4 className="text-xl font-bold text-black mb-2">{step.title}</h4>
                         <p className="text-gray-600">{step.desc}</p>
