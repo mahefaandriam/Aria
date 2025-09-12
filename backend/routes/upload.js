@@ -4,6 +4,8 @@ import path from 'path';
 import fs from 'fs/promises';
 import { authenticateToken } from './admin.js';
 import { fileURLToPath } from 'url';
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 
 const router = express.Router();
 const __filename = fileURLToPath(import.meta.url);
