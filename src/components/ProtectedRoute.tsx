@@ -1,8 +1,14 @@
-import { Navigate } from "react-router-dom";
+import { Navigate } from 'react-router-dom'
+import { useAuth } from './AuthContext'
 
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const isAuthenticated = localStorage.getItem("isAuthenticated") === "true";
-  return isAuthenticated ? <>{children}</> : <Navigate to="/admin" replace />;
-};
+export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+  const { user, loading } = useAuth()
 
-export default ProtectedRoute;
+  if (loading) return <div>Chargement...</div>
+
+  if (!user) {
+    return <Navigate to="/admin/login" replace />
+  }
+
+  return children
+}

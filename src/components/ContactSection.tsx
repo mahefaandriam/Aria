@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Send, Mail, Phone, MapPin, Clock, CheckCircle, Sparkles } from 'lucide-react';
 import { useScrollAnimation, useStaggeredAnimation } from "@/hooks/useScrollAnimation";
-import { contactApi, type ContactMessage } from '@/services/api';
+import { type ContactMessage } from '@/services/api';
+import { addMessage } from '@/services/messagesService';
 import "@/styles/animations.css";
 
 // Composant formulaire de contact avancé
@@ -36,17 +37,16 @@ const ContactForm = () => {
         message: formData.message
       };
 
-      const response = await contactApi.sendMessage(messageData);
+      const response = await addMessage(messageData);
 
-      if (response.success) {
+      if (response) {
         setIsSubmitted(true);
-        console.log('📧 Message envoyé avec succès:', response.message);
 
-        // Reset après 5 secondes
+        // Reset après 3 secondes
         setTimeout(() => {
           setIsSubmitted(false);
           setFormData({ name: '', email: '', company: '', subject: '', message: '' });
-        }, 5000);
+        }, 3000);
       }
     } catch (error) {
       console.error('Erreur lors de l\'envoi du message:', error);

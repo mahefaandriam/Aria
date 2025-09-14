@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { adminApi } from "@/services/api";
+//import { adminApi } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
+import { login } from "@/services/authService";
 
 const AdminLoginForm = () => {
   const [email, setEmail] = useState("");
@@ -17,24 +18,11 @@ const AdminLoginForm = () => {
     setError("");
     setIsLoading(true);
 
+    e.preventDefault()
     try {
-      const response = await adminApi.login(email, password);
-
-      if (response.success) {
-        localStorage.setItem("isAuthenticated", "true");
-
-        toast({
-          title: "Connexion réussie",
-          description: `Bienvenue ${response.user.name}`,
-        });
-
-        navigate("/dashboard");
-      } else {
-        setError(response.message || "Erreur de connexion");
-      }
+      await login(email, password)
+      navigate('/dashboard')
     } catch (error) {
-      console.error("Erreur de connexion:", error);
-
       if (error instanceof Error) {
         if (error.message.includes("Backend non disponible")) {
           setError("Serveur indisponible. Vérifiez que le backend est démarré.");

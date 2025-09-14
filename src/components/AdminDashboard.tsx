@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllAdminProjects, createProject, updateProject, deleteProject, updateProjectStatus, type AdminProject } from "@/services/projectsService";
-import { adminApi, uploadApi, contactApi, healthApi, type ContactMessage } from "@/services/api";
+import { getProjects, addProject, updateProject, deleteProject, updateProjectStatus } from "@/services/projectsService";
+import { /*adminApi, uploadApi, contactApi, healthApi,*/ Project, type ContactMessage } from "@/services/api";
 import { useToast } from "@/hooks/use-toast";
+import { logout } from "@/services/authService";
+import { deleteMessage, getMessages, updateMessageStatus } from "@/services/messagesService";
+import { markAsUntransferable } from "worker_threads";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
-  const [projects, setProjects] = useState<AdminProject[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -67,8 +70,7 @@ const AdminDashboard = () => {
 
   const checkDatabaseConnection = async () => {
     try {
-      const response = await healthApi.checkHealth();
-      if (response.success) {
+      if (true) {
         setDbStatus('connected');
         toast({
           title: "Base de données",
@@ -84,8 +86,8 @@ const AdminDashboard = () => {
 
   const loadProjects = async () => {
     try {
-      const adminProjects = await getAllAdminProjects();
-      setProjects(adminProjects);
+      const projects = await getProjects();
+      setProjects(projects);
     } catch (error) {
       console.error('Erreur lors du chargement des projets:', error);
       toast({
@@ -98,10 +100,10 @@ const AdminDashboard = () => {
 
   const loadMessages = async () => {
     try {
-      const response = await contactApi.getAllMessages();
-      if (response.success && response.data) {
-        setMessages(response.data.messages);
-        console.log('📧 Messages de contact chargés:', response.data.messages.length);
+      const response = await getMessages();
+      if (response) {
+        setMessages(response);
+        //console.log('📧 Messages de contact chargés:', response.data.messages.length);
       }
     } catch (error) {
       console.error('Erreur lors du chargement des messages:', error);
@@ -117,6 +119,9 @@ const AdminDashboard = () => {
     title: "",
     description: "",
     technologies: [] as string[],
+    sector: "",
+    objectives: [] as string[],
+    solutions: [] as string[],
     client: "",
     duration: "",
     status: "En attente" as StatutFrontend,
@@ -127,13 +132,16 @@ const AdminDashboard = () => {
 
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [currentTechnology, setCurrentTechnology] = useState("");
+  const [currentObjectives, setCurrentObjectives] = useState("");
+  const [currentSolutions, setCurrentSolutions] = useState("");
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
   const [messageReply, setMessageReply] = useState("");
 
   const handleLogout = () => {
     localStorage.removeItem("isAuthenticated");
-    adminApi.logout();
-    navigate("/admin");
+    logout();
+   // adminApi.logout();
+    navigate("/admin/login");
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -173,52 +181,92 @@ const AdminDashboard = () => {
     });
   };
 
+  // Handle Objectives
+    const addObjectives= () => {
+    if (currentObjectives.trim() && !newProject.objectives.includes(currentObjectives.trim())) {
+      setNewProject({
+        ...newProject,
+        objectives: [...newProject.objectives, currentObjectives.trim()]
+      });
+      setCurrentObjectives("");
+    }
+  };
+
+  const removeObjectives = (tech: string) => {
+    setNewProject({
+      ...newProject,
+      objectives: newProject.objectives.filter(t => t !== tech)
+    });
+  };
+
+    // Handle Solutions
+    const addSolutions = () => {
+    if (currentSolutions.trim() && !newProject.solutions.includes(currentSolutions.trim())) {
+      setNewProject({
+        ...newProject,
+        solutions: [...newProject.solutions, currentSolutions.trim()]
+      });
+      setCurrentSolutions("");
+    }
+  };
+
+  const removeSolutions = (tech: string) => {
+    setNewProject({
+      ...newProject,
+      solutions: newProject.solutions.filter(t => t !== tech)
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault();  
     setIsLoading(true);
     
-    try {
-      let imageUrl = newProject.imagePreview;
-      
-      // Upload de l'image si nécessaire
-      if (newProject.image) {
-        setIsUploadingImage(true);
-        try {
-          const uploadResponse = await uploadApi.uploadImage(newProject.image);
-          if (uploadResponse.success && uploadResponse.data) {
-            imageUrl = uploadResponse.data.imageUrl;
-          }
-        } catch (uploadError) {
-          // console.error('Erreur lors de l\'upload:', uploadError);
-          // toast({
-          //   title: "Erreur",
-          //   description: "Erreur lors de l'upload de l'image. Le projet sera créé sans image.",
-          //   variant: "destructive",
-          // });
-        } finally {
-          setIsUploadingImage(false);
-        }
-      }
+    const projectData: Project = {
+      title: newProject.title,
+      description: newProject.description,
+      technologies: newProject.technologies,
+      client: newProject.client,
+      duration: newProject.duration,
+      status: versStatutBackend(newProject.status),
+      url: newProject.url,
+      sector : newProject.sector,
+      objectives: newProject.objectives,
+      solutions: newProject.solutions,
+      date: new Date().toISOString().slice(0, 10)
+    };
 
-      const projectData = {
-        title: newProject.title,
-        description: newProject.description,
-        technologies: newProject.technologies,
-        client: newProject.client,
-        duration: newProject.duration,
-        status: versStatutBackend(newProject.status),
-        imageUrl: imageUrl,
-        url: newProject.url,
-        date: new Date().toISOString().slice(0, 10)
-      };
+    try {
+      /*if (newProject.image && projectData) {
+        
+        try {
+          
+          /*const uploadResponse = await uploadApi.uploadImage(newProject.image);
+          if (uploadResponse.success && uploadResponse.data) {
+            image_url = uploadResponse.data.image_url;
+          }*/
+
+       /* } catch (uploadError) {
+          // console.error('Erreur lors de l\'upload:', uploadError);
+           toast({
+             title: "Erreur",
+             description: "Erreur lors de l'upload de l'image. Le projet sera créé sans image.",
+             variant: "destructive",
+           });
+        } finally {
+        }
+      }*/
 
       console.log('📝 Données projet à créer:', projectData);
 
       if (editingProjectId !== null) {
         // Mise à jour
-        const updatedProject = await updateProject(editingProjectId, projectData);
+        const updatedProject = await updateProject(editingProjectId, projectData, newProject.image);
         if (updatedProject) {
-          setProjects(projects.map(p => p.id === editingProjectId ? updatedProject : p));
+          setProjects(projects.map(p => {
+             if (p.id === editingProjectId ) 
+              p = projectData;
+            return p;
+          }));
           toast({
             title: "Succès",
             description: "Projet mis à jour avec succès",
@@ -227,9 +275,9 @@ const AdminDashboard = () => {
         setEditingProjectId(null);
       } else {
         // Création
-        const newCreatedProject = await createProject(projectData);
+        const newCreatedProject = await addProject(projectData, newProject.image);
         if (newCreatedProject) {
-          setProjects([newCreatedProject, ...projects]);
+          setProjects([...projects]);
           toast({
             title: "Succès",
             description: "Projet créé avec succès",
@@ -242,6 +290,9 @@ const AdminDashboard = () => {
         title: "",
         description: "",
         technologies: [],
+        sector: "",
+        objectives: [],
+        solutions: [],
         client: "",
         duration: "",
         status: "En attente",
@@ -261,19 +312,24 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleEdit = (project: AdminProject) => {
+  const handleEdit = (project: Project) => {
     setNewProject({
       title: project.title,
       description: project.description,
       technologies: project.technologies,
+      sector: project.sector,
+      objectives: project.objectives,
+      solutions: project.solutions,
       client: project.client,
       duration: project.duration,
       status: formatStatus(project.status) as 'En cours' | 'Terminé' | 'En attente',
       image: null,
-      imagePreview: project.imagePreview || project.imageUrl,
+      imagePreview: project.image_url,
       url: project.url || "",
     });
     setEditingProjectId(project.id);
+
+    document.getElementById("input_project")?.scrollIntoView({ behavior: "smooth" })
   };
 
   const handleDelete = async (projectId: string) => {
@@ -300,7 +356,7 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleStatusChange = async (projectId: string, newStatus: AdminProject['status']) => {
+  const handleStatusChange = async (projectId: string, newStatus: Project['status']) => {
     try {
       const updatedProject = await updateProjectStatus(projectId, newStatus);
       if (updatedProject) {
@@ -326,8 +382,8 @@ const AdminDashboard = () => {
     }
 
     try {
-      const response = await contactApi.deleteMessage(messageId);
-      if (response.success) {
+      const response = await deleteMessage(messageId);
+      if (response) {
         setMessages(messages.filter((message) => message.id !== messageId));
         toast({
           title: "Succès",
@@ -346,11 +402,13 @@ const AdminDashboard = () => {
 
   const handleMarkAsRead = async (messageId: string) => {
     try {
-      const response = await contactApi.updateMessageStatus(messageId, 'LU');
-      if (response.success && response.data) {
-        setMessages(messages.map(msg =>
-          msg.id === messageId ? response.data.message : msg
-        ));
+     const response = await updateMessageStatus(messageId, 'LU');
+      if (response) {
+        setMessages(messages.map(msg => {
+          if(msg.id === messageId)  
+            msg.status = 'LU';
+          return msg;
+        }));
         toast({
           title: "Succès",
           description: "Message marqué comme lu",
@@ -370,11 +428,13 @@ const AdminDashboard = () => {
     if (!newStatus) return;
 
     try {
-      const response = await contactApi.updateMessageStatus(messageId, newStatus);
-      if (response.success && response.data) {
-        setMessages(messages.map(msg =>
-          msg.id === messageId ? response.data.message : msg
-        ));
+      const response = await updateMessageStatus(messageId, newStatus);
+      if (response) {
+        setMessages(messages.map(msg => {
+          if(msg.id === messageId)  
+            msg.status = newStatus;
+          return msg;
+        }));
         toast({
           title: "Succès",
           description: `Statut changé vers "${newStatus}"`,
@@ -412,30 +472,26 @@ const AdminDashboard = () => {
   };
 
   const handleEmail = (message: ContactMessage) => {
-    return () => {
-      const email = message.email;
-      const name = message.name;
-      const subject = encodeURIComponent('Réponse à votre message');
-      const body = encodeURIComponent(
-        `Bonjour ${name},\n\n` +
-      `Nous avons bien reçu votre demande concernant :\n"${message.subject || ''}"\n\n` +
-      `Notre équipe vous contactera rapidement.\n\n` +
-      `Cordialement,\nL'équipe de l'Aria Creative\n\n`
-      );
+    const email = message.email;
+    const name = message.name;
+    const subject = encodeURIComponent('Réponse à votre message');
+    const body = encodeURIComponent(
+      `Bonjour ${name},\n\n` +
+    `Nous avons bien reçu votre demande concernant :\n"${message.subject || ''}"\n\n` +
+    `Notre équipe vous contactera rapidement.\n\n` +
+    `Cordialement,\nL'équipe de l'Aria Creative\n\n`
+    );
 
-      const gmailURL = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}&body=${body}`;
-
-      try {
-        if (navigator.onLine) {
-          console.log('Ouverture de Gmail…');
-          window.open(gmailURL, '_blank');
-        } else {
-          alert("Veuillez vérifier votre connexion Internet avant d'envoyer un message.");
-        }
-      } catch (error) {
-        console.error("Erreur lors de l'ouverture de Gmail :", error);
-        alert("Impossible d'ouvrir Gmail. Veuillez nous contacter manuellement à : " + email);
+    const gmailURL = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}&body=${body}`;
+    try {
+      if (navigator.onLine) {
+        window.open(gmailURL, '_blank');
+      } else {
+        alert("Veuillez vérifier votre connexion Internet avant d'envoyer un message.");
       }
+    } catch (error) {
+      console.error("Erreur lors de l'ouverture de Gmail :", error);
+      alert("Impossible d'ouvrir Gmail. Veuillez nous contacter manuellement à : " + email);
     }
   };
 
@@ -466,15 +522,25 @@ const AdminDashboard = () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div  id='input_project' className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column */}
           <div className="lg:col-span-1">
             {/* New Post Form */}
-            <div className="bg-gray-900 p-6 rounded-xl shadow-2xl transition-all duration-300 hover:shadow-orange-500/20 animate-fadeInLeft border border-gray-800">
+            <div className={`relative p-6 rounded-xl shadow-2xl transition-all duration-300 hover:shadow-orange-500/20 animate-fadeInLeft border border-gray-800
+              ${editingProjectId !== null ? "bg-orange-400/10" : "bg-gray-900"}
+            `}>
               <h2 className="text-2xl font-semibold mb-6 text-orange-400 transform transition duration-500 hover:translate-x-2">
                 {editingProjectId !== null ? "Modifier le projet" : "Nouveau projet"}
               </h2>
-              <form onSubmit={handleSubmit} className="space-y-6">
+              {editingProjectId !== null && 
+              (<div className="absolute top-2 right-5 z-50">
+                <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="orange" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="orange" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </div>
+              )}
+              <form onSubmit={handleSubmit} className="space-y-6" >
                 <div>
                   <label className="block text-orange-300 mb-2 font-medium" htmlFor="title">
                     Titre du projet
@@ -610,6 +676,85 @@ const AdminDashboard = () => {
                   </div>
                 </div>
                 <div>
+                  <label className="block text-orange-300 mb-2 font-medium">
+                    Les objectifs
+                  </label>
+                  <div className="flex gap-2 mb-3">
+                    <input
+                      type="text"
+                      value={currentObjectives}
+                      onChange={(e) => setCurrentObjectives(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addObjectives())}
+                      className="flex-1 px-4 py-2 bg-black text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition duration-300 focus:border-orange-500 hover:border-gray-600"
+                      placeholder="Ajouter une technologie..."
+                    />
+                    <button
+                      type="button"
+                      onClick={addObjectives}
+                      className="px-4 py-2 bg-orange-500 text-black rounded-lg hover:bg-orange-400 transition duration-300 font-medium"
+                    >
+                      Ajouter
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {newProject.objectives.map((tech) => (
+                      <span
+                        key={tech}
+                        className="inline-flex items-center gap-1 px-3 py-1 bg-orange-500/20 text-orange-300 rounded-full border border-orange-500/50 text-sm"
+                      >
+                        {tech}
+                        <button
+                          type="button"
+                          onClick={() => removeObjectives(tech)}
+                          className="ml-1 text-orange-400 hover:text-orange-300 transition duration-200"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-orange-300 mb-2 font-medium">
+                    Les solutions
+                  </label>
+                  <div className="flex gap-2 mb-3">
+                    <input
+                      type="text"
+                      value={currentSolutions}
+                      onChange={(e) => setCurrentSolutions(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSolutions())}
+                      className="flex-1 px-4 py-2 bg-black text-white border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition duration-300 focus:border-orange-500 hover:border-gray-600"
+                      placeholder="Ajouter une technologie..."
+                    />
+                    <button
+                      type="button"
+                      onClick={addSolutions}
+                      className="px-4 py-2 bg-orange-500 text-black rounded-lg hover:bg-orange-400 transition duration-300 font-medium"
+                    >
+                      Ajouter
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {newProject.solutions.map((tech) => (
+                      <span
+                        key={tech}
+                        className="inline-flex items-center gap-1 px-3 py-1 bg-orange-500/20 text-orange-300 rounded-full border border-orange-500/50 text-sm"
+                      >
+                        {tech}
+                        <button
+                          type="button"
+                          onClick={() => removeSolutions(tech)}
+                          className="ml-1 text-orange-400 hover:text-orange-300 transition duration-200"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div>
                   <label className="block text-orange-300 mb-2 font-medium" htmlFor="image">
                     Image
                   </label>
@@ -646,6 +791,9 @@ const AdminDashboard = () => {
                           title: "",
                           description: "",
                           technologies: [],
+                          sector: "",
+                          objectives: [],
+                          solutions: [],
                           client: "",
                           duration: "",
                           status: "En attente",
@@ -665,7 +813,17 @@ const AdminDashboard = () => {
                     disabled={isLoading || isUploadingImage}
                     className="bg-gradient-to-r from-orange-500 to-orange-400 text-black font-semibold py-3 px-6 rounded-lg hover:from-orange-400 hover:to-orange-300 transition duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-orange-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isLoading ? (isUploadingImage ? "Upload en cours..." : "Traitement...") : 
+                    
+                    {isLoading ? 
+                    (
+                      <div className="flex">
+                        <svg className="mt-1 animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>                      
+                        {isUploadingImage ? "Upload en cours..." : "Traitement..."}
+                      </div>
+                    ) : 
                      editingProjectId !== null ? "Modifier" : "Créer le projet"}
                   </button>
                 </div>
@@ -766,13 +924,13 @@ const AdminDashboard = () => {
                           </select>
                         </div>
                         <span className="text-gray-400 text-sm bg-gray-800 px-3 py-1 rounded-full">
-                          {message.createdAt ? new Date(message.createdAt).toLocaleDateString('fr-FR', {
+                         {/* {message.createdAt ? new Date(message.createdAt).toLocaleDateString('fr-FR', {
                             day: '2-digit',
                             month: '2-digit',
                             year: 'numeric',
                             hour: '2-digit',
                             minute: '2-digit'
-                          }) : 'Date inconnue'}
+                          }) : 'Date inconnue'}*/}
                         </span>
                       </div>
                       <div className="mb-3">
@@ -796,14 +954,14 @@ const AdminDashboard = () => {
                           {message.status === 'NOUVEAU' && (
                             <button
                               onClick={() => handleMarkAsRead(message.id!)}
-                              className="text-blue-400 hover:text-blue-300 transition duration-300 font-medium px-3 py-1 rounded border border-blue-500 hover:bg-blue-500 hover:text-black"
+                              className="text-blue-400 transition duration-300 font-medium px-3 py-1 rounded border border-blue-500 hover:bg-blue-500 hover:text-black"
                             >
                               ✓ Marquer lu
                             </button>
                           )}
                           <button
                             onClick={() => handleDeleteMessage(message.id!)}
-                            className="text-red-400 hover:text-red-300 transition duration-300 font-medium px-3 py-1 rounded border border-red-500 hover:bg-red-500 hover:text-black"
+                            className="text-red-400 transition duration-300 font-medium px-3 py-1 rounded border border-red-500 hover:bg-red-500 hover:text-black"
                           >
                             🗑 Supprimer
                           </button>
@@ -812,12 +970,12 @@ const AdminDashboard = () => {
                             onClick={() => handleEmail(message)}
                             className={`px-3 py-2 rounded-lg transition-colors text-sm font-medium ${
                               message.status === 'LU' || message.status === 'TRAITE'
-                                ? 'bg-gray-400 cursor-not-allowed text-gray-600' 
-                                : 'bg-green-500 hover:bg-green-600 text-white'
+                                ? 'cursor-not-allowed text-gray-600' 
+                                : 'border-blue-500 text-blue-400 hover:bg-blue-500 hover:text-black transition-colors duration-700'
                             }`}
                             disabled={message.status === 'LU'}
                           >
-                            ✉ Répondre au client
+                            Répondre au client
                           </button>
                         {/* <a
                           href={`mailto:${message.email}?subject=Re: ${message.subject}`}
@@ -944,13 +1102,13 @@ const AdminDashboard = () => {
                         <div className="flex space-x-2">
                           <button
                             onClick={() => handleEdit(project)}
-                            className="text-orange-400 hover:text-orange-300 transition duration-300 transform hover:scale-110 font-medium px-3 py-1 rounded border border-orange-500 hover:bg-orange-500 hover:text-black text-sm"
+                            className="text-orange-400 transition duration-300 transform hover:scale-110 font-medium px-3 py-1 rounded border border-orange-500 hover:bg-orange-500 hover:text-black text-sm"
                           >
                             ✏️ Modifier
                           </button>
                           <button
                             onClick={() => handleDelete(project.id)}
-                            className="text-red-400 hover:text-red-300 transition duration-300 transform hover:scale-110 font-medium px-3 py-1 rounded border border-red-500 hover:bg-red-500 hover:text-black text-sm"
+                            className="text-red-400 transition duration-300 transform hover:scale-110 font-medium px-3 py-1 rounded border border-red-500 hover:bg-red-500 hover:text-black text-sm"
                           >
                             🗑 Supprimer
                           </button>
@@ -1020,15 +1178,15 @@ const AdminDashboard = () => {
                             href={project.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 text-orange-400 hover:text-orange-300 transition duration-300 font-medium px-3 py-1 rounded border border-orange-500 hover:bg-orange-500 hover:text-black"
+                            className="inline-flex items-center gap-2 text-orange-400 transition duration-300 font-medium px-3 py-1 rounded border border-orange-500 hover:bg-orange-500 hover:text-black"
                           >
                             🔗 Voir le projet
                           </a>
                         </div>
                       )}
-                      {(project.imagePreview || project.imageUrl) && (
+                      {(project.image_url) && (
                         <img
-                          src={project.imagePreview || project.imageUrl}
+                          src={project.image_url}
                           alt={project.title}
                           className="h-64 w-full object-cover rounded-lg border-2 border-orange-500 transition duration-300 hover:scale-[1.01] shadow-lg"
                         />

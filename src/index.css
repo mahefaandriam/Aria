@@ -118,3 +118,14 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* highlight blink on show */
+.highlight-blink {
+  animation: blink 1s ease-in-out 3;
+}
+
+@keyframes blink {
+  0% { background-color: white; }
+  50% { background-color: transparent; }
+  100% { background-color: red; }
+}

@@ -11,7 +11,10 @@ interface ProjectCardProps {
   sector: string;
   objectives: string[];
   solutions: string[];
-  imageUrl: string;
+  image_url?: string;
+  client: string;
+  duration: string;
+  date: string;
   websiteUrl?: string;
 }
 
@@ -21,7 +24,10 @@ const ProjectCard = ({
   sector,
   objectives,
   solutions,
-  imageUrl,
+  image_url,
+  client,
+  duration,
+  date,
   websiteUrl
 }: ProjectCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -44,7 +50,7 @@ const ProjectCard = ({
         {/* Image avec overlay interactif */}
         <div className="relative overflow-hidden h-64">
           <img
-            src={imageUrl}
+            src={image_url}
             alt={`Projet ${title}`}
             loading="lazy"
             className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 filter group-hover:brightness-110"
@@ -99,7 +105,7 @@ const ProjectCard = ({
                   <h4 className="font-semibold text-orange-400">Objectifs</h4>
                 </div>
                 <ul className="space-y-2">
-                  {objectives.map((objective, index) => (
+                  {objectives && objectives.map((objective, index) => (
                     <li
                       key={index}
                       className="flex items-start space-x-3 text-sm text-gray-300 animate-fade-in-left"
@@ -118,7 +124,7 @@ const ProjectCard = ({
                   <h4 className="font-semibold text-green-400">Solutions</h4>
                 </div>
                 <ul className="space-y-2">
-                  {solutions.map((solution, index) => (
+                  {solutions && solutions.map((solution, index) => (
                     <li
                       key={index}
                       className="flex items-start space-x-3 text-sm text-gray-300 animate-fade-in-right"

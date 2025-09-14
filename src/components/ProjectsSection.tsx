@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import ProjectCard from "@/components/ProjectCard";
-import { getClientProjects, getDefaultProjects, type ClientProject } from "@/services/projectsService";
+import { getClientProjects, getDefaultProjects } from "@/services/projectsService";
+import { /*adminApi, uploadApi, contactApi, healthApi,*/ Project, type ContactMessage } from "@/services/api";
 import { useScrollAnimation, useStaggeredAnimation } from "@/hooks/useScrollAnimation";
 import "@/styles/animations.css";
 
 // Les projets sont maintenant chargés dynamiquement depuis le dashboard admin
 
 const ProjectsSection = () => {
-  const [projects, setProjects] = useState<ClientProject[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { elementRef, isVisible } = useScrollAnimation<HTMLDivElement>();
   const { containerRef, visibleItems } = useStaggeredAnimation<HTMLDivElement>(projects.length, 200);
@@ -26,12 +27,12 @@ const ProjectsSection = () => {
           setProjects(clientProjects);
         } else {
           // Fallback vers les projets par défaut s'il n'y en a aucun dans l'API
-          setProjects(getDefaultProjects());
+         // setProjects(getDefaultProjects());
         }
       } catch (error) {
-        console.error('Erreur lors du chargement des projets:', error);
+        console.error('Erreur lors du chargement des projets');
         // Fallback vers les projets par défaut en cas d'erreur
-        setProjects(getDefaultProjects());
+        //setProjects(getDefaultProjects());
       } finally {
         setIsLoading(false);
       }
@@ -39,10 +40,6 @@ const ProjectsSection = () => {
 
     loadProjects();
 
-    // Recharger les projets toutes les 300 secondes pour sync avec l'API
-    const interval = setInterval(loadProjects, 300000);
-
-    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -95,7 +92,7 @@ const ProjectsSection = () => {
             ref={containerRef}
             className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto"
           >
-            {projects.map((project, index) => (
+            {projects && projects.map((project, index) => (
               <div
                 key={`${project.title}-${index}`}
                 className={`transform transition-all duration-500 ${
