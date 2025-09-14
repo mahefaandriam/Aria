@@ -1063,7 +1063,7 @@ const AdminDashboard = () => {
                       key={project.id}
                       className="bg-black border border-gray-800 rounded-lg p-6 transition-all duration-300 hover:border-orange-500 hover:shadow-lg hover:shadow-orange-500/10 animate-fadeIn"
                     >
-                      <div className="flex justify-between items-start mb-4">
+                      <div className="block md:flex justify-between items-start mb-4">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
                             <h3 className="text-xl font-bold text-orange-400 transition duration-300 hover:text-orange-300">
@@ -1088,7 +1088,7 @@ const AdminDashboard = () => {
                               </select>
                               {(projects.filter(p => formaterStatut(p.status) === 'Terminé').length) && (
                                 <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-medium border border-green-500/30 flex items-center gap-1">
-                                  🌐 Publié sur le site
+                                  🌐 Publié
                                 </span>
                               )}
                             </div>
@@ -1102,13 +1102,13 @@ const AdminDashboard = () => {
                         <div className="flex space-x-2">
                           <button
                             onClick={() => handleEdit(project)}
-                            className="text-orange-400 transition duration-300 transform hover:scale-110 font-medium px-3 py-1 rounded border border-orange-500 hover:bg-orange-500 hover:text-black text-sm"
+                            className="min-w-20 text-orange-400 transition duration-300 transform hover:scale-110 font-medium px-3 py-1 rounded border border-orange-500 hover:bg-orange-500 hover:text-black text-sm"
                           >
                             ✏️ Modifier
                           </button>
                           <button
                             onClick={() => handleDelete(project.id)}
-                            className="text-red-400 transition duration-300 transform hover:scale-110 font-medium px-3 py-1 rounded border border-red-500 hover:bg-red-500 hover:text-black text-sm"
+                            className="min-w-20 text-red-400 transition duration-300 transform hover:scale-110 font-medium px-3 py-1 rounded border border-red-500 hover:bg-red-500 hover:text-black text-sm"
                           >
                             🗑 Supprimer
                           </button>
