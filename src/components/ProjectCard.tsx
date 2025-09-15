@@ -15,7 +15,7 @@ interface ProjectCardProps {
   client: string;
   duration: string;
   date: string;
-  websiteUrl?: string;
+  url?: string;
 }
 
 const ProjectCard = ({
@@ -28,7 +28,7 @@ const ProjectCard = ({
   client,
   duration,
   date,
-  websiteUrl
+  url
 }: ProjectCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -154,9 +154,9 @@ const ProjectCard = ({
               }`} />
             </button>
 
-            {websiteUrl && (
+            {url && (
               <a
-                href={websiteUrl}
+                href={url}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
