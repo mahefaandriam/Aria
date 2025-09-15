@@ -210,9 +210,6 @@ const Header = () => {
                   scrolled ? "opacity-0 w-0" : "opacity-100"
                 }`}
               >
-                <span className="text-white font-bold text-xl group-hover:text-orange-400 transition-colors duration-300">
-                  ARIA
-                </span>
               </div>
             </div>
             {/* Navigation Desktop */}
@@ -309,7 +306,7 @@ const Header = () => {
                       icon: "",
                     },
                     { href: "#services", label: "Nos Services", icon: "" },
-                    { href: "#contact", label: "Nos Contact", icon: "" },
+                    { href: "#contact", label: "Nos Contacts", icon: "" },
                   ].map((item) => (
                     <a
                       key={item.href}
