@@ -96,7 +96,7 @@ const ProjectCard = ({
 
           {/* Section objectifs avec animation staggerée */}
           <div className={`transition-all duration-500 ${
-            showDetails ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
+            showDetails ? 'max-h-100 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
           }`}>
             <div className="space-y-4">
               <div className="animate-fade-in-left delay-200">
