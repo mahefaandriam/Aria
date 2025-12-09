@@ -1,5 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import { Users, Target, Heart, Award, Code, Palette, Rocket, Shield, ArrowRight } from 'lucide-react';
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Button = ({ children, className, ...props }) => {
   return (
@@ -24,6 +28,10 @@ const backgroundVideo = "/videos/2715412-uhd_3840_2160_30fps.mp4";
 
 const AboutSection = () => {
   const videoRef = useRef(null);
+  const leftCardRef = useRef(null);
+  const rightCardRef = useRef(null);
+  const processRef = useRef(null);
+  const processCirclesRefs = useRef([]);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -35,6 +43,93 @@ const AboutSection = () => {
         });
       }
     }
+
+    // Animation carte gauche (lentement de la gauche ↔ droite)
+    if (leftCardRef.current) {
+      gsap.fromTo(leftCardRef.current, 
+        { x: "-15vw", opacity: 0 }, 
+        {
+          x: 0,
+          opacity: 1,
+          duration: 2,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: leftCardRef.current,
+            start: "top 85%",
+            end: "bottom 20%",
+            scrub: 1.5,
+            toggleActions: "play reverse play reverse"
+          }
+        }
+      );
+    }
+
+    // Animation carte droite (lentement de la droite ↔ gauche)
+    if (rightCardRef.current) {
+      gsap.fromTo(rightCardRef.current, 
+        { x: "15vw", opacity: 0 }, 
+        {
+          x: 0,
+          opacity: 1,
+          duration: 2,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: rightCardRef.current,
+            start: "top 85%",
+            end: "bottom 20%",
+            scrub: 1.5,
+            toggleActions: "play reverse play reverse"
+          }
+        }
+      );
+    }
+
+    // Animation cercles processus (chacun son coin)
+    if (processRef.current && processCirclesRefs.current.length === 5) {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: processRef.current,
+          start: "top 90%",
+          end: "bottom 10%",
+          scrub: 2,
+          toggleActions: "play reverse play reverse"
+        }
+      });
+
+      // Positions des coins pour chaque cercle
+      const positions = [
+        { x: "-40%", y: "-40%" },  // 1: haut-gauche
+        { x: "40%", y: "-40%" },   // 2: haut-droite
+        { x: "-40%", y: "40%" },   // 3: bas-gauche
+        { x: "40%", y: "40%" },    // 4: bas-droite
+        { x: "0%", y: "0%" }       // 5: centre (fixe)
+      ];
+
+      processCirclesRefs.current.forEach((circle, index) => {
+        if (circle) {
+          tl.fromTo(circle, 
+            { 
+              x: positions[index].x, 
+              y: positions[index].y,
+              scale: 0.3,
+              rotation: -180
+            },
+            {
+              x: 0,
+              y: 0,
+              scale: 1,
+              rotation: 0,
+              duration: 1.5,
+              ease: "power3.out"
+            }, 0);
+        }
+      });
+    }
+
+    // Cleanup
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
   }, []);
 
   return (
@@ -102,6 +197,11 @@ const AboutSection = () => {
           filter: blur(4px);
           z-index: -1;
         }
+
+        .process-circle {
+          position: relative;
+          transform-origin: center;
+        }
       `}</style>
 
       <section id="about" className="pt-16 pb-24 bg-gray-950 relative overflow-hidden">
@@ -162,7 +262,7 @@ const AboutSection = () => {
                     {/* Colonne gauche */}
                     <div className="space-y-6">
                       {/* Carte Expertises */}
-                      <div className="card-light bg-white/95 backdrop-blur-xl p-6 sm:p-7 relative overflow-hidden">
+                      <div ref={leftCardRef} className="card-light bg-white/95 backdrop-blur-xl p-6 sm:p-7 relative overflow-hidden">
                         <h3 className="text-lg sm:text-xl font-bold text-orange-500 mb-5 flex items-center">
                           <span className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-orange-500/10 mr-3">
                             <Code className="w-5 h-5 text-orange-500" />
@@ -195,7 +295,7 @@ const AboutSection = () => {
                     {/* Colonne droite */}
                     <div className="space-y-6">
                       {/* Carte Équipe */}
-                      <div className="card-light bg-white/95 backdrop-blur-xl p-6 sm:p-7 relative overflow-hidden">
+                      <div ref={rightCardRef} className="card-light bg-white/95 backdrop-blur-xl p-6 sm:p-7 relative overflow-hidden">
                         <div
                           className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(249,115,22,0.15),transparent_55%),radial-gradient(circle_at_bottom_right,rgba(249,115,22,0.18),transparent_55%)] opacity-80 pointer-events-none"
                         />
@@ -224,28 +324,19 @@ const AboutSection = () => {
                           </div>
                         </div>
                       </div>
-
-
-
-
-
-
                     </div>
                   </div>
+
                   {/* CTA */}
-                  {/* CTA élargi */}
                   <div className="flex justify-center">
                     <div className="relative w-full max-w-sm group">
-                      {/* Glow autour du bouton */}
                       <div className="absolute inset-0 -z-10 bg-gradient-to-r from-orange-500 via-orange-400 to-orange-600 rounded-2xl blur-md opacity-60 group-hover:opacity-90 transition duration-300" />
-
-                      {/* Bouton */}
                       <Button
                         className="relative w-full bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-500 hover:to-orange-600 
-      text-white px-6 py-3.5 text-base rounded-2xl 
-      flex items-center justify-center gap-2 
-      shadow-[0_14px_35px_rgba(234,88,12,0.45)]
-      group-hover:-translate-y-1 transition-all"
+                        text-white px-6 py-3.5 text-base rounded-2xl 
+                        flex items-center justify-center gap-2 
+                        shadow-[0_14px_35px_rgba(234,88,12,0.45)]
+                        group-hover:-translate-y-1 transition-all"
                       >
                         Parlons de votre projet
                         <ArrowRight className="w-4 h-4" />
@@ -254,7 +345,7 @@ const AboutSection = () => {
                   </div>
 
                   {/* Processus */}
-                  <div className="card-glass mt-6 border border-white/10 bg-white/5 backdrop-blur-2xl px-5 sm:px-7 py-8">
+                  <div ref={processRef} className="card-glass mt-6 border border-white/10 bg-white/5 backdrop-blur-2xl px-5 sm:px-7 py-8">
                     <h3 className="text-2xl sm:text-3xl font-bold text-white text-center mb-9 tracking-tight">
                       Notre Processus
                     </h3>
@@ -267,7 +358,9 @@ const AboutSection = () => {
                         { image: process5, title: "Conseils", desc: "Accompagnement & recommandations personnalisées" }
                       ].map((step, index) => (
                         <div key={index} className="text-center group flex flex-col items-center">
-                          <div className="process-image-ring mb-4">
+                          <div className="process-image-ring mb-4 process-circle" ref={el => {
+                            if (el) processCirclesRefs.current[index] = el;
+                          }}>
                             <div className="relative w-32 h-32 sm:w-36 sm:h-36 rounded-full overflow-hidden border-[3px] border-orange-400/80 shadow-[0_0_30px_rgba(249,115,22,0.6)] group-hover:shadow-[0_0_45px_rgba(249,115,22,0.9)] transition-all duration-500">
                               <img
                                 src={step.image}
