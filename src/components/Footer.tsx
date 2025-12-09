@@ -33,7 +33,7 @@ const Footer = () => {
                 <div>
                   <h3 className="text-2xl font-extrabold tracking-tight">ARIA</h3>
                   <p className="text-xs uppercase tracking-[0.25em] text-orange-300/80">
-                    Agence digitale
+                    Agences digitales
                   </p>
                 </div>
               </div>
