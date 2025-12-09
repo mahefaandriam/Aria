@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Rocket } from "lucide-react";
 import { useParallax } from "@/hooks/useScrollAnimation";
@@ -62,48 +62,70 @@ const HeroSection = () => {
     return () => section?.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  // ✅ GSAP ScrollTrigger CORRIGÉ - useLayoutEffect + refs sécurisées
-  useLayoutEffect(() => {
-    let ctx = gsap.context(() => {
-      const createStatsAnimation = (ref: React.RefObject<HTMLElement>, isMobile = false) => {
-        const container = ref.current;
-        if (!container) return;
-
-        const items = container.querySelectorAll(".stat-item");
-        if (items.length === 0) return;
-
-        // Pré-set les valeurs initiales
-        gsap.set(items, { 
-          autoAlpha: 0, 
-          y: isMobile ? 30 : 40, 
-          scale: isMobile ? 0.9 : 0.85 
-        });
-
+  // 🎯 GSAP ScrollTrigger pour les stats (Desktop + Mobile)
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // Animation Desktop
+      if (statsRefDesktop.current) {
         ScrollTrigger.create({
-          trigger: container,
-          start: "top 85%",
+          trigger: statsRefDesktop.current,
+          start: "top 80%",
           once: true,
-          onEnter: () => gsap.to(items, {
-            autoAlpha: 1,
-            y: 0,
-            scale: 1,
-            duration: isMobile ? 0.7 : 0.8,
-            stagger: isMobile ? 0.15 : 0.25,
-            ease: "power3.out"
-          })
+          onEnter: () => {
+            gsap.fromTo(
+              statsRefDesktop.current!.querySelectorAll(".stat-item"),
+              {
+                autoAlpha: 0,
+                y: 40,
+                scale: 0.85,
+              },
+              {
+                autoAlpha: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.8,
+                stagger: 0.25,
+                ease: "power3.out",
+              }
+            );
+          },
         });
-      };
+      }
 
-      createStatsAnimation(statsRefDesktop, false);
-      createStatsAnimation(statsRefMobile, true);
+      // Animation Mobile
+      if (statsRefMobile.current) {
+        ScrollTrigger.create({
+          trigger: statsRefMobile.current,
+          start: "top 80%",
+          once: true,
+          onEnter: () => {
+            gsap.fromTo(
+              statsRefMobile.current!.querySelectorAll(".stat-item"),
+              {
+                autoAlpha: 0,
+                y: 30,
+                scale: 0.9,
+              },
+              {
+                autoAlpha: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.7,
+                stagger: 0.2,
+                ease: "power3.out",
+              }
+            );
+          },
+        });
+      }
     });
 
     return () => ctx.revert();
   }, []);
 
-  const handleScrollTo = useCallback((id: string) => {
+  const handleScrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-  }, []);
+  };
 
   const statsData = [
     { number: "+40", label: "Projets" },
@@ -137,16 +159,16 @@ const HeroSection = () => {
           overflow: hidden;
           animation: blinkCaret 0.9s step-end infinite;
         }
+        
         .stat-item {
           will-change: transform, opacity;
         }
-        .stats-desktop, .stats-mobile {
-          contain: layout style paint;
-        }
+        
         @keyframes blinkCaret {
           0%, 100% { border-color: transparent; }
           50% { border-color: #f97316; }
         }
+        
         @media (max-width: 1024px) {
           .stats-desktop { display: none !important; }
         }
@@ -202,7 +224,7 @@ const HeroSection = () => {
         <div className="pointer-events-none hero-orbit absolute -left-8 sm:-left-20 md:-left-32 bottom-[-40px] sm:bottom-[-60px] md:bottom-[-120px] w-24 sm:w-40 md:w-[360px] h-24 sm:h-40 md:h-[360px] rounded-full opacity-20 sm:opacity-30 blur-xl sm:blur-3xl animate-float-slow" />
 
         <div className="relative z-10 w-full max-w-7xl mx-auto flex-1 flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-12 pt-8 sm:pt-12 lg:pt-16">
-          {/* Colonne gauche : texte */}
+          {/* Colonne gauche : texte - RESPONSIVE */}
           <div className="w-full lg:w-auto lg:max-w-lg order-2 lg:order-1 space-y-4 sm:space-y-6 text-center lg:text-left">
             <div className="inline-flex items-center justify-center lg:justify-start gap-2 px-3 py-1.5 sm:py-2 rounded-full bg-orange-500/10 border border-orange-500/30 text-xs sm:text-sm text-orange-300 mb-4 sm:mb-6 animate-fade-in-down max-w-max mx-auto lg:mx-0">
               <span className="inline-flex h-2 w-2 rounded-full bg-orange-400 animate-pulse" />
@@ -266,9 +288,9 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {/* Colonne droite : carte logo + STATS */}
+          {/* Colonne droite : carte logo + STATS ANIMÉES GSAP */}
           <div className="w-full lg:w-auto order-1 lg:order-2 flex flex-col lg:flex-row items-center lg:items-start gap-6 lg:gap-8">
-            {/* Carte logo */}
+            {/* Carte logo - RESPONSIVE */}
             <div className="w-full lg:w-auto flex justify-center lg:justify-end flex-1 max-w-sm sm:max-w-md lg:max-w-none">
               <div className="logo-card hero-glass rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 lg:p-10 w-full shadow-[0_12px_40px_rgba(15,23,42,0.8)] sm:shadow-[0_18px_60px_rgba(15,23,42,0.8)] border-slate-700/40 animate-fade-in-right flex flex-col justify-center">
                 <div className="flex flex-col items-center gap-3 sm:gap-4 md:gap-6 flex-1 justify-center">
@@ -348,7 +370,7 @@ const HeroSection = () => {
                   {statsData.map((stat, index) => (
                     <div
                       key={stat.label}
-                      className="stat-item group relative w-full py-3 px-4 cursor-pointer"
+                      className="stat-item group relative w-full py-3 px-4 cursor-pointer opacity-0 translate-y-10 scale-[0.85]"
                     >
                       <div className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-amber-400/30 rounded-xl -z-10 scale-0 group-hover:scale-100 blur-sm transition-all duration-700" />
 
@@ -382,7 +404,7 @@ const HeroSection = () => {
                 {statsData.map((stat, index) => (
                   <div
                     key={stat.label}
-                    className="stat-item group relative w-[80px] h-[85px] flex flex-col justify-center items-center cursor-pointer flex-1"
+                    className="stat-item group relative w-[80px] h-[85px] flex flex-col justify-center items-center cursor-pointer flex-1 opacity-0 translate-y-8 scale-90"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-amber-400/30 rounded-xl -z-10 scale-0 group-hover:scale-100 blur-sm transition-all duration-700" />
 
@@ -402,6 +424,7 @@ const HeroSection = () => {
                   </div>
                 ))}
 
+                {/* Decorations flottantes ajustées */}
                 <div className="absolute -right-1.5 -top-1.5 w-3.5 h-3.5 bg-orange-400/50 rounded-full blur-sm opacity-70 animate-pulse-slow" />
                 <div className="absolute -right-1.5 -bottom-1.5 w-2.5 h-2.5 bg-amber-400/50 rounded-full blur-sm opacity-60 animate-[pulse_2.5s_ease-in-out_infinite]" />
               </div>
