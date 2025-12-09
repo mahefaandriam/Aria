@@ -2,7 +2,11 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Rocket } from "lucide-react";
 import { useParallax } from "@/hooks/useScrollAnimation";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import "@/styles/animations.css";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const dynamicWords = [
   "défis digitaux",
@@ -15,7 +19,6 @@ const HeroSection = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0.5, y: 0.5 });
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [typedWord, setTypedWord] = useState("");
-  const [statsVisible, setStatsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement | null>(null);
   const statsRefDesktop = useRef<HTMLDivElement>(null);
   const statsRefMobile = useRef<HTMLDivElement>(null);
@@ -59,38 +62,76 @@ const HeroSection = () => {
     return () => section?.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  // 🎯 SCROLL TRIGGER POUR LES DEUX STATS (Desktop + Mobile)
-  const handleScroll = useCallback(() => {
-    if (statsVisible) return;
-
-    // Check desktop stats
-    if (statsRefDesktop.current) {
-      const rect = statsRefDesktop.current.getBoundingClientRect();
-      if (rect.top < window.innerHeight * 0.8 && rect.bottom > 0) {
-        setStatsVisible(true);
-        return;
-      }
-    }
-
-    // Check mobile stats
-    if (statsRefMobile.current) {
-      const rect = statsRefMobile.current.getBoundingClientRect();
-      if (rect.top < window.innerHeight * 0.8 && rect.bottom > 0) {
-        setStatsVisible(true);
-        return;
-      }
-    }
-  }, [statsVisible]);
-
+  // 🎯 GSAP ScrollTrigger pour les stats (Desktop + Mobile)
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll(); // Check initial position
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [handleScroll]);
+    const ctx = gsap.context(() => {
+      // Animation Desktop
+      if (statsRefDesktop.current) {
+        ScrollTrigger.create({
+          trigger: statsRefDesktop.current,
+          start: "top 80%",
+          once: true,
+          onEnter: () => {
+            gsap.fromTo(
+              statsRefDesktop.current!.querySelectorAll(".stat-item"),
+              {
+                autoAlpha: 0,
+                y: 40,
+                scale: 0.85,
+              },
+              {
+                autoAlpha: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.8,
+                stagger: 0.25,
+                ease: "power3.out",
+              }
+            );
+          },
+        });
+      }
+
+      // Animation Mobile
+      if (statsRefMobile.current) {
+        ScrollTrigger.create({
+          trigger: statsRefMobile.current,
+          start: "top 80%",
+          once: true,
+          onEnter: () => {
+            gsap.fromTo(
+              statsRefMobile.current!.querySelectorAll(".stat-item"),
+              {
+                autoAlpha: 0,
+                y: 30,
+                scale: 0.9,
+              },
+              {
+                autoAlpha: 1,
+                y: 0,
+                scale: 1,
+                duration: 0.7,
+                stagger: 0.2,
+                ease: "power3.out",
+              }
+            );
+          },
+        });
+      }
+    });
+
+    return () => ctx.revert();
+  }, []);
 
   const handleScrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const statsData = [
+    { number: "+40", label: "Projets" },
+    { number: "95%", label: "Satisfaction" },
+    { number: "7/7", label: "Support" },
+  ];
 
   return (
     <>
@@ -119,88 +160,7 @@ const HeroSection = () => {
           animation: blinkCaret 0.9s step-end infinite;
         }
         
-        /* 🎬 ANIMATIONS STATS SCROLL-TRIGGERED */
-        @keyframes statSlideIn {
-          0% {
-            opacity: 0;
-            transform: translateY(30px) scale(0.85);
-          }
-          50% {
-            opacity: 0.6;
-            transform: translateY(8px) scale(0.97);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-        @keyframes countUp {
-          0% { 
-            transform: translateY(15px); 
-            opacity: 0; 
-            scale: 0.8;
-          }
-          70% { 
-            opacity: 1; 
-            scale: 1.05;
-          }
-          100% { 
-            transform: translateY(0); 
-            opacity: 1; 
-            scale: 1;
-          }
-        }
-        @keyframes labelSlide {
-          0% { 
-            transform: translateX(-20px); 
-            opacity: 0; 
-          }
-          100% { 
-            transform: translateX(0); 
-            opacity: 1; 
-          }
-        }
-        @keyframes lineGrow {
-          0% { 
-            transform: scaleX(0); 
-            opacity: 0; 
-            width: 0;
-          }
-          100% { 
-            transform: scaleX(1); 
-            opacity: 1; 
-            width: 100%;
-          }
-        }
-        @keyframes floatSlow {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-6px); }
-        }
-        @keyframes pulseSlow {
-          0%, 100% { opacity: 0.7; transform: scale(1); }
-          50% { opacity: 1; transform: scale(1.1); }
-        }
-        
-        .stats-animated {
-          animation: statSlideIn 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-        }
-        .count-up {
-          animation: countUp 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
-        }
-        .label-slide {
-          animation: labelSlide 0.6s ease-out 0.5s both;
-        }
-        .line-grow {
-          animation: lineGrow 0.8s ease-out 0.7s both;
-        }
-        .animate-float-slow {
-          animation: floatSlow 4s ease-in-out infinite;
-        }
-        .animate-pulse-slow {
-          animation: pulseSlow 3s ease-in-out infinite;
-        }
-        .transform-gpu {
-          transform: translateZ(0);
+        .stat-item {
           will-change: transform, opacity;
         }
         
@@ -328,7 +288,7 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {/* Colonne droite : carte logo + STATS ANIMÉES */}
+          {/* Colonne droite : carte logo + STATS ANIMÉES GSAP */}
           <div className="w-full lg:w-auto order-1 lg:order-2 flex flex-col lg:flex-row items-center lg:items-start gap-6 lg:gap-8">
             {/* Carte logo - RESPONSIVE */}
             <div className="w-full lg:w-auto flex justify-center lg:justify-end flex-1 max-w-sm sm:max-w-md lg:max-w-none">
@@ -398,43 +358,34 @@ const HeroSection = () => {
               </div>
             </div>
 
-            {/* ✅ STATS DESKTOP - SCROLL ANIMATED */}
+            {/* ✅ STATS DESKTOP - GSAP ScrollTrigger */}
             <div
               ref={statsRefDesktop}
               className="stats-desktop hidden lg:flex lg:flex-col lg:items-end lg:justify-center lg:ml-8 w-[180px] h-[380px]"
             >
-              <div className="relative p-4 w-full h-full flex flex-col justify-center bg-gradient-to-br from-slate-900/80 via-slate-800/70 to-slate-900/60 backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-2xl shadow-orange-500/30 hover:shadow-orange-500/50 transition-all duration-500 overflow-hidden animate-float-slow transform-gpu">
+              <div className="relative p-4 w-full h-full flex flex-col justify-center bg-gradient-to-br from-slate-900/80 via-slate-800/70 to-slate-900/60 backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-2xl shadow-orange-500/30 hover:shadow-orange-500/50 transition-all duration-500 overflow-hidden animate-float-slow">
                 <div className="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-br from-orange-400/40 to-amber-400/40 rounded-xl blur-lg shadow-lg shadow-orange-500/50 animate-float-slow" />
 
                 <div className="flex flex-col items-end gap-5 flex-1 justify-center space-y-1 relative z-10">
-                  {[
-                    { number: "+40", label: "Projets" },
-                    { number: "95%", label: "Satisfaction" },
-                    { number: "7/7", label: "Support" },
-                  ].map((stat, index) => (
+                  {statsData.map((stat, index) => (
                     <div
                       key={stat.label}
-                      className={`group relative w-full py-3 px-4 cursor-pointer transform-gpu ${
-                        statsVisible
-                          ? "stats-animated opacity-100"
-                          : "opacity-0 invisible"
-                      }`}
-                      style={{ animationDelay: `${index * 250}ms` }}
+                      className="stat-item group relative w-full py-3 px-4 cursor-pointer opacity-0 translate-y-10 scale-[0.85]"
                     >
                       <div className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-amber-400/30 rounded-xl -z-10 scale-0 group-hover:scale-100 blur-sm transition-all duration-700" />
 
                       <div className="relative bg-slate-900/90 backdrop-blur-md rounded-xl p-4 border border-slate-700/60 hover:border-orange-400/50 transition-all duration-500 hover:bg-slate-800/90 shadow-lg hover:shadow-2xl hover:shadow-orange-500/40 hover:scale-[1.02]">
                         <div className="mb-2 overflow-hidden">
-                          <span className="count-up text-2xl lg:text-3xl font-black bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 bg-clip-text text-transparent drop-shadow-xl group-hover:drop-shadow-2xl transition-all duration-500 block leading-none">
+                          <span className="text-2xl lg:text-3xl font-black bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 bg-clip-text text-transparent drop-shadow-xl group-hover:drop-shadow-2xl transition-all duration-500 block leading-none">
                             {stat.number}
                           </span>
                         </div>
 
-                        <p className="label-slide text-xs uppercase tracking-wider font-semibold text-slate-300 group-hover:text-slate-100 group-hover:translate-x-1 transition-all duration-400 origin-left">
+                        <p className="text-xs uppercase tracking-wider font-semibold text-slate-300 group-hover:text-slate-100 group-hover:translate-x-1 transition-all duration-400 origin-left">
                           {stat.label}
                         </p>
 
-                        <div className="line-grow absolute bottom-1 left-4 right-4 h-px bg-gradient-to-r from-orange-400/60 to-amber-400/60 rounded-full scale-x-0 origin-left opacity-0 group-hover:opacity-100 group-hover:scale-x-100 transition-all duration-700 mx-auto" />
+                        <div className="absolute bottom-1 left-4 right-4 h-px bg-gradient-to-r from-orange-400/60 to-amber-400/60 rounded-full scale-x-0 origin-left opacity-0 group-hover:opacity-100 group-hover:scale-x-100 transition-all duration-700 mx-auto" />
                       </div>
                     </div>
                   ))}
@@ -444,40 +395,31 @@ const HeroSection = () => {
               </div>
             </div>
 
-            {/* ✅ STATS MOBILE HORIZONTAL - DIMENSIONS PARFAITES */}
+            {/* ✅ STATS MOBILE HORIZONTAL - GSAP ScrollTrigger */}
             <div
               ref={statsRefMobile}
               className="stats-mobile lg:hidden flex flex-row items-center justify-center gap-4 w-full h-[110px] p-3 mt-6"
             >
-              <div className="relative w-full max-w-[320px] h-[100px] flex flex-row items-center justify-center bg-gradient-to-r from-slate-900/80 via-slate-800/70 to-slate-900/60 backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-2xl shadow-orange-500/30 hover:shadow-orange-500/50 transition-all duration-500 overflow-hidden animate-float-slow transform-gpu px-4">
-                {[
-                  { number: "+40", label: "Projets" },
-                  { number: "95%", label: "Satisfaction" },
-                  { number: "7/7", label: "Support" },
-                ].map((stat, index) => (
+              <div className="relative w-full max-w-[320px] h-[100px] flex flex-row items-center justify-center bg-gradient-to-r from-slate-900/80 via-slate-800/70 to-slate-900/60 backdrop-blur-xl rounded-2xl border border-slate-700/50 shadow-2xl shadow-orange-500/30 hover:shadow-orange-500/50 transition-all duration-500 overflow-hidden animate-float-slow px-4">
+                {statsData.map((stat, index) => (
                   <div
                     key={stat.label}
-                    className={`group relative w-[80px] h-[85px] flex flex-col justify-center items-center cursor-pointer transform-gpu flex-1 ${
-                      statsVisible
-                        ? "stats-animated opacity-100"
-                        : "opacity-0 invisible"
-                    }`}
-                    style={{ animationDelay: `${index * 250}ms` }}
+                    className="stat-item group relative w-[80px] h-[85px] flex flex-col justify-center items-center cursor-pointer flex-1 opacity-0 translate-y-8 scale-90"
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-amber-400/30 rounded-xl -z-10 scale-0 group-hover:scale-100 blur-sm transition-all duration-700" />
 
                     <div className="relative w-full h-full bg-slate-900/90 backdrop-blur-md rounded-xl border border-slate-700/60 hover:border-orange-400/50 transition-all duration-500 hover:bg-slate-800/90 shadow-lg hover:shadow-xl hover:shadow-orange-500/40 hover:scale-105 flex flex-col justify-center items-center p-2.5">
                       <div className="mb-1.5 overflow-hidden w-full flex justify-center">
-                        <span className="count-up text-[22px] md:text-[26px] font-black bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 bg-clip-text text-transparent drop-shadow-lg group-hover:drop-shadow-xl transition-all duration-400 block leading-none">
+                        <span className="text-[22px] md:text-[26px] font-black bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 bg-clip-text text-transparent drop-shadow-lg group-hover:drop-shadow-xl transition-all duration-400 block leading-none">
                           {stat.number}
                         </span>
                       </div>
 
-                      <p className="label-slide text-[8px] md:text-[9px] uppercase tracking-wider font-semibold text-slate-300 group-hover:text-slate-100 transition-all duration-400 text-center leading-tight px-0.5">
+                      <p className="text-[8px] md:text-[9px] uppercase tracking-wider font-semibold text-slate-300 group-hover:text-slate-100 transition-all duration-400 text-center leading-tight px-0.5">
                         {stat.label}
                       </p>
 
-                      <div className="line-grow absolute bottom-1 left-1.5 right-1.5 h-[1.5px] bg-gradient-to-r from-orange-400/60 to-amber-400/60 rounded-full scale-x-0 origin-center opacity-0 group-hover:opacity-100 group-hover:scale-x-100 transition-all duration-700" />
+                      <div className="absolute bottom-1 left-1.5 right-1.5 h-[1.5px] bg-gradient-to-r from-orange-400/60 to-amber-400/60 rounded-full scale-x-0 origin-center opacity-0 group-hover:opacity-100 group-hover:scale-x-100 transition-all duration-700" />
                     </div>
                   </div>
                 ))}
