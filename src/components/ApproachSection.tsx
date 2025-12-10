@@ -85,7 +85,7 @@ const ServicesSection = () => {
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-64 h-64 bg-orange-600/25 blur-3xl rounded-full" />
         </div>
 
-
+        
 
         <div className="container mx-auto px-6 relative z-10">
           <div className="text-center mb-16">
@@ -104,7 +104,7 @@ const ServicesSection = () => {
                 <TiltCard>
                   <div className="bg-slate-900/85 backdrop-blur-xl p-8 rounded-2xl border border-slate-700/80 hover:border-orange-500 hover:shadow-[0_24px_70px_rgba(249,115,22,0.55)] transition-all duration-300 animate-fadeIn delay-100">
                     <img
-                      src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                      src="../../public/images/approche.avif"
                       alt="Approche sur mesure"
                       className="service-image"
                     />
@@ -125,7 +125,7 @@ const ServicesSection = () => {
                 <TiltCard>
                   <div className="bg-slate-900/85 backdrop-blur-xl p-8 rounded-2xl border border-slate-700/80 hover:border-orange-500 hover:shadow-[0_24px_70px_rgba(249,115,22,0.55)] transition-all duration-300 animate-fadeIn delay-200">
                     <img
-                      src="https://images.unsplash.com/photo-1581287053822-fd7bf4f4bfec?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                      src="../../public/images/qualite.jpg"
                       alt="Qualité visuelle et technique"
                       className="service-image"
                     />
