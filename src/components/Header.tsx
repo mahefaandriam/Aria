@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Menu,
@@ -9,15 +9,46 @@ import {
   Image,
   Settings,
   Mail,
+  ChevronDown,
+  Globe,
+  Smartphone,
+  Palette,
+  TrendingUp,
+  Code
 } from "lucide-react";
 import "@/styles/animations.css";
 
-const Header = () => {
+// Type pour les données du service sélectionné
+interface SelectedService {
+  type: string;
+  label: string;
+}
+
+interface HeaderProps {
+  onServiceSelect?: (service: SelectedService) => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onServiceSelect }) => {
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("accueil");
   const [scrollProgress, setScrollProgress] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [selectedService, setSelectedService] = useState<SelectedService | null>(null);
+
+  // Gérer le clic en dehors du dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setServicesDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -60,6 +91,87 @@ const Header = () => {
     { id: "services", href: "#services", icon: Settings, label: "Services" },
     { id: "contact", href: "#contact", icon: Mail, label: "Contact" },
   ];
+
+  const serviceOptions = [
+    { 
+      value: "Site web / E-commerce", 
+      label: "Site web / E-commerce",
+      icon: <Globe className="w-4 h-4" />,
+     
+    },
+    { 
+      value: "Application mobile", 
+      label: "Application mobile",
+      icon: <Smartphone className="w-4 h-4" />,
+   
+    },
+    { 
+      value: "Design UI/UX", 
+      label: "Design UI/UX",
+      icon: <Palette className="w-4 h-4" />,
+    
+    },
+    { 
+      value: "Marketing digital", 
+      label: "Marketing digital",
+      icon: <TrendingUp className="w-4 h-4" />,
+    
+    },
+    { 
+      value: "Autre projet", 
+      label: "Autre",
+      icon: <Code className="w-4 h-4" />,
+     
+    },
+  ];
+
+  const handleServiceClick = (service: string, label: string) => {
+    // Créer l'objet service sélectionné
+    const selectedServiceData = { type: service, label };
+    setSelectedService(selectedServiceData);
+    
+    // Notifier le parent (App) du service sélectionné
+    if (onServiceSelect) {
+      onServiceSelect(selectedServiceData);
+    }
+    
+    // Fermer le dropdown
+    setServicesDropdownOpen(false);
+    
+    // Scroll vers la section contact
+    const contactSection = document.getElementById("contact");
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: "smooth" });
+      
+      // Ajouter un petit délai pour s'assurer que la section est visible
+      setTimeout(() => {
+        // Mettre le focus sur le champ message ou le premier champ
+        const messageField = document.querySelector('#contact textarea[name="message"]') as HTMLTextAreaElement;
+        if (messageField) {
+          messageField.focus();
+          
+          // Pré-remplir le champ message avec le service sélectionné
+          const currentValue = messageField.value;
+          if (!currentValue.includes(service)) {
+            const prefix = currentValue ? `${currentValue}\n\n` : '';
+            messageField.value = `${prefix}Service intéressé : ${service}`;
+            
+            // Déclencher l'événement change pour mettre à jour l'état
+            const event = new Event('input', { bubbles: true });
+            messageField.dispatchEvent(event);
+          }
+        }
+      }, 500);
+    }
+  };
+
+  // Fonction pour gérer le CTA "Commencer maintenant"
+  const handleCTAClick = () => {
+    const contactSection = document.getElementById("contact");
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
     <>
@@ -175,6 +287,116 @@ const Header = () => {
           visibility: visible;
           transform: scale(1);
           animation: fadeIn 0.4s ease-out;
+        }
+
+        /* SERVICES DROPDOWN STYLES */
+        .services-dropdown {
+          position: absolute;
+          top: calc(100% + 10px);
+          left: 50%;
+          transform: translateX(-50%);
+          width: 320px;
+          background: linear-gradient(145deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(249, 115, 22, 0.3);
+          border-radius: 16px;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+          opacity: 0;
+          visibility: hidden;
+          transform: translateX(-50%) translateY(-10px);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 1000;
+          overflow: hidden;
+        }
+
+        .services-dropdown.open {
+          opacity: 1;
+          visibility: visible;
+          transform: translateX(-50%) translateY(0);
+        }
+
+        .services-dropdown::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(circle at top right, rgba(249, 115, 22, 0.1), transparent 70%);
+          z-index: -1;
+        }
+
+        .service-option {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 14px 16px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          cursor: pointer;
+          transition: all 0.2s ease;
+          background: transparent;
+          border: none;
+          width: 100%;
+          text-align: left;
+          color: rgba(255, 255, 255, 0.9);
+        }
+
+        .service-option:last-child {
+          border-bottom: none;
+        }
+
+        .service-option:hover {
+          background: rgba(249, 115, 22, 0.1);
+          color: rgba(255, 255, 255, 1);
+          padding-left: 20px;
+        }
+
+        .service-option:hover .service-icon {
+          transform: scale(1.1);
+          color: #f97316;
+        }
+
+        .service-option:hover .service-description {
+          opacity: 1;
+        }
+
+        .service-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 36px;
+          height: 36px;
+          background: rgba(249, 115, 22, 0.1);
+          border-radius: 10px;
+          color: rgba(255, 255, 255, 0.7);
+          transition: all 0.2s ease;
+          flex-shrink: 0;
+        }
+
+        .service-content {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .service-label {
+          font-weight: 500;
+          font-size: 0.9rem;
+          margin-bottom: 4px;
+          transition: color 0.2s ease;
+        }
+
+        .service-description {
+          font-size: 0.75rem;
+          color: rgba(255, 255, 255, 0.5);
+          opacity: 0.7;
+          transition: opacity 0.2s ease;
+          line-height: 1.3;
+        }
+
+        .dropdown-arrow {
+          transition: transform 0.3s ease;
+        }
+
+        .dropdown-arrow.open {
+          transform: rotate(180deg);
         }
 
         .cta-premium {
@@ -482,8 +704,6 @@ const Header = () => {
                 { href: "#accueil", label: "Accueil", icon: "" },
                 { href: "#about", label: "À Propos", icon: "" },
                 { href: "#realisations", label: "Nos Réalisations", icon: "" },
-                { href: "#services", label: "Nos Services", icon: "" },
-                { href: "#contact", label: "Nos Contacts", icon: "" },
               ].map((item, index) => (
                 <a
                   key={item.href}
@@ -510,6 +730,76 @@ const Header = () => {
                   )}
                 </a>
               ))}
+
+              {/* Services Dropdown */}
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  className={`nav-item relative px-4 py-3 rounded-xl transition-all duration-300 text-sm font-medium group flex items-center gap-2 ${
+                    activeSection === "services" || servicesDropdownOpen
+                      ? "text-orange-400 active"
+                      : scrolled
+                      ? "text-gray-200 hover:text-orange-400"
+                      : "text-white/95 hover:text-orange-400"
+                  }`}
+                  onMouseEnter={() => setServicesDropdownOpen(true)}
+                  onMouseLeave={() => !servicesDropdownOpen && setHoveredItem(null)}
+                  onClick={() => setServicesDropdownOpen(!servicesDropdownOpen)}
+                  style={{ animationDelay: "300ms" }}
+                >
+                  <span className="flex items-center space-x-2 relative z-10">
+                    <span className="text-xs group-hover:animate-bounce">
+                    </span>
+                    <span>Nos Services</span>
+                    <ChevronDown className={`w-4 h-4 dropdown-arrow ${servicesDropdownOpen ? "open" : ""}`} />
+                  </span>
+                  {hoveredItem === "#services" && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-orange-500/25 to-orange-600/25 rounded-xl backdrop-blur-md" />
+                  )}
+                </button>
+
+                {/* Dropdown Menu */}
+                <div className={`services-dropdown ${servicesDropdownOpen ? "open" : ""}`}>
+                  {serviceOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      className="service-option"
+                      onClick={() => handleServiceClick(option.value, option.label)}
+                    >
+                      <div className="service-icon">
+                        {option.icon}
+                      </div>
+                      <div className="service-content">
+                        <div className="service-label">{option.label}</div>
+                        <div className="service-description">{option.description}</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Contact */}
+              <a
+                href="#contact"
+                className={`nav-item relative px-4 py-3 rounded-xl transition-all duration-300 text-sm font-medium group ${
+                  activeSection === "contact"
+                    ? "text-orange-400 active"
+                    : scrolled
+                    ? "text-gray-200 hover:text-orange-400"
+                    : "text-white/95 hover:text-orange-400"
+                }`}
+                onMouseEnter={() => setHoveredItem("#contact")}
+                onMouseLeave={() => setHoveredItem(null)}
+                style={{ animationDelay: "400ms" }}
+              >
+                <span className="flex items-center space-x-2 relative z-10">
+                  <span className="text-xs group-hover:animate-bounce">
+                  </span>
+                  <span>Nos Contacts</span>
+                </span>
+                {hoveredItem === "#contact" && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-500/25 to-orange-600/25 rounded-xl backdrop-blur-md" />
+                )}
+              </a>
             </nav>
 
             {/* 🚀 BOUTON CTA + NEIGE ULTRA DENSE + DÉPÔT DE NEIGE - DESKTOP */}
@@ -542,11 +832,7 @@ const Header = () => {
 
               <button
                 className="cta-premium group relative"
-                onClick={() => {
-                  document
-                    .getElementById("contact")
-                    ?.scrollIntoView({ behavior: "smooth" });
-                }}
+                onClick={handleCTAClick}
               >
                 <span className="relative z-10 flex items-center space-x-3 font-bold tracking-wide">
                   <span className="group-hover:translate-x-1 transition-transform duration-500">
@@ -639,6 +925,26 @@ const Header = () => {
                       <span className="text-sm font-medium">{item.label}</span>
                     </a>
                   ))}
+                  
+                  {/* Sous-menu des services pour mobile */}
+                  <div className="pl-4 space-y-2 border-l border-orange-500/20 ml-2">
+                    <p className="text-xs text-orange-300 font-semibold mb-2">Types de services :</p>
+                    {serviceOptions.map((option) => (
+                      <a
+                        key={option.value}
+                        href="#contact"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleServiceClick(option.value, option.label);
+                          setMobileMenuOpen(false);
+                        }}
+                        className="block pl-4 py-2 text-sm text-gray-300 hover:text-orange-400 transition-colors"
+                      >
+                        • {option.label}
+                      </a>
+                    ))}
+                  </div>
+                  
                   <div className="relative">
                     <div className="absolute inset-0 w-full h-[120px]">
                       {/* ❄️ 20 FLAKES NEIGE MOBILE ULTRA DENSE */}

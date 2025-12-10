@@ -1,11 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Send, Mail, Phone, MapPin, Clock, CheckCircle, Sparkles } from 'lucide-react';
 import { useScrollAnimation, useStaggeredAnimation } from "@/hooks/useScrollAnimation";
 import { type ContactMessage } from '@/services/api';
 import { addMessage } from '@/services/messagesService';
 import "@/styles/animations.css";
 
-const ContactForm = () => {
+// Type pour les données du service
+interface SelectedService {
+  type: string;
+  label: string;
+}
+
+interface ContactFormProps {
+  selectedService?: SelectedService | null;
+  onServiceClear?: () => void;
+}
+
+interface ContactSectionProps {
+  selectedService?: SelectedService | null;
+}
+
+const ContactForm: React.FC<ContactFormProps> = ({ selectedService, onServiceClear }) => {
   const [formData, setFormData] = useState<ContactMessage>({
     name: '',
     email: '',
@@ -17,9 +32,29 @@ const ContactForm = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const lastServiceRef = useRef<string | null>(null);
 
   const { elementRef, isVisible } = useScrollAnimation({ threshold: 0.1 });
   const { containerRef, visibleItems } = useStaggeredAnimation<HTMLFormElement>(6, 150);
+
+  // Effet simplifié pour pré-remplir le champ "Type de projet"
+  useEffect(() => {
+    if (selectedService) {
+      // Vérifier si c'est un nouveau service (comparaison par type)
+      if (selectedService.type !== lastServiceRef.current) {
+        setFormData(prev => ({
+          ...prev,
+          subject: selectedService.type
+        }));
+        lastServiceRef.current = selectedService.type;
+      }
+    } else {
+      // Si selectedService devient null, réinitialiser
+      if (lastServiceRef.current !== null) {
+        lastServiceRef.current = null;
+      }
+    }
+  }, [selectedService]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,6 +77,7 @@ const ContactForm = () => {
         setTimeout(() => {
           setIsSubmitted(false);
           setFormData({ name: '', email: '', company: '', subject: '', message: '' });
+          lastServiceRef.current = null;
         }, 3000);
       }
     } catch (error) {
@@ -59,11 +95,40 @@ const ContactForm = () => {
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
+    const { name, value } = e.target;
+    
+    // Si l'utilisateur modifie le sujet manuellement
+    if (name === 'subject') {
+      // Si le service est sélectionné et que l'utilisateur change la valeur
+      if (selectedService && value !== selectedService.type) {
+        lastServiceRef.current = null;
+      }
+      // Si l'utilisateur vide le champ
+      if (value === '') {
+        lastServiceRef.current = null;
+      }
+    }
+    
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: value
     });
   };
+
+  // Fonction pour effacer le service sélectionné
+  const handleClearService = () => {
+    setFormData(prev => ({
+      ...prev,
+      subject: ''
+    }));
+    lastServiceRef.current = null;
+    onServiceClear?.();
+  };
+
+  // Vérifier si le service est actuellement pré-rempli
+  const isServicePrefilled = selectedService && 
+                            lastServiceRef.current === selectedService.type && 
+                            formData.subject === selectedService.type;
 
   if (isSubmitted) {
     return (
@@ -98,6 +163,32 @@ const ContactForm = () => {
       </div>
 
       <form onSubmit={handleSubmit} ref={containerRef} className="relative z-10 space-y-6">
+        {/* Badge du service sélectionné */}
+        {isServicePrefilled && (
+          <div className="mb-2 transform transition-all duration-500 animate-fade-in">
+            <div className="relative overflow-hidden bg-gradient-to-r from-orange-500/15 to-orange-600/15 p-3 rounded-xl border border-orange-400/40">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="bg-orange-500/20 p-1.5 rounded-lg">
+                    <CheckCircle className="w-4 h-4 text-orange-300" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-orange-200 font-medium">Type de projet pré-sélectionné</p>
+                    <p className="text-sm text-white font-semibold">{selectedService.label}</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleClearService}
+                  className="text-xs text-gray-400 hover:text-white px-2 py-1 rounded-lg hover:bg-orange-500/20 transition-colors"
+                >
+                  Changer
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* En-tête du formulaire */}
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -204,7 +295,7 @@ const ContactForm = () => {
             </div>
           </div>
 
-          {/* Sujet */}
+          {/* Sujet (Type de projet) */}
           <div
             className={`transform transition-all duration-500 ${
               visibleItems.has(3) ? 'animate-fade-in-right' : 'opacity-0 translate-x-4'
@@ -227,13 +318,19 @@ const ContactForm = () => {
                 <option value="Application mobile">Application mobile</option>
                 <option value="Design UI/UX">Design UI/UX</option>
                 <option value="Marketing digital">Marketing digital</option>
-                <option value="Autre projet">Autre</option>
+                <option value="Autre projet">Autre projet</option>
               </select>
               <div
                 className={`absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500/25 to-orange-600/25 opacity-0 transition-opacity duration-300 pointer-events-none ${
                   focusedField === 'subject' ? 'opacity-100' : ''
                 }`}
               />
+              {/* Indicateur que le champ a été auto-rempli */}
+              {isServicePrefilled && (
+                <div className="absolute -top-2 right-3 bg-orange-500 text-white text-xs px-2 py-0.5 rounded-full">
+                  ✓
+                </div>
+              )}
             </div>
           </div>
 
@@ -325,7 +422,7 @@ const ContactForm = () => {
   );
 };
 
-const ContactSection = () => {
+const ContactSection: React.FC<ContactSectionProps> = ({ selectedService }) => {
   const { elementRef, isVisible } = useScrollAnimation({ threshold: 0.1 });
   const { containerRef, visibleItems } = useStaggeredAnimation(4, 200);
 
@@ -339,13 +436,17 @@ const ContactSection = () => {
     {
       icon: Phone,
       title: "Téléphone",
-      content: "+262 693 52 16 26",
+      content: [
+        "+261 32 03 682 18",
+        "+261 34 17 533 02",
+        "+261 34 07 042 09",
+      ],
       description: "Lun-Ven 9h-18h"
     },
     {
       icon: MapPin,
       title: "Localisation",
-      content: "Antananarivo, Madagascar",
+      content: "Madagascar",
       description: "Sur rendez-vous"
     },
     {
@@ -355,6 +456,10 @@ const ContactSection = () => {
       description: "Assistance continue"
     }
   ];
+
+  const handleServiceClear = () => {
+    // Cette fonction est passée au ContactForm
+  };
 
   return (
     <section
@@ -369,7 +474,7 @@ const ContactSection = () => {
       </div>
 
       <div className="container mx-auto px-6 relative z-10">
-        {/* Header */}
+        {/* Header avec indication si un service est sélectionné */}
         <div
           ref={elementRef}
           className={`text-center mb-16 transform transition-all duration-700 ${
@@ -378,21 +483,36 @@ const ContactSection = () => {
         >
           <div className="inline-flex items-center px-4 py-1 mb-4 rounded-full border border-orange-500/35 bg-orange-500/10 text-xs font-semibold uppercase tracking-[0.22em] text-orange-300">
             <Sparkles className="w-4 h-4 mr-2" />
-            Parlons de votre projet
+            {selectedService ? `Projet ${selectedService.label}` : 'Parlons de votre projet'}
           </div>
 
           <div className="flex items-center justify-center mb-4">
             <Sparkles className="w-7 h-7 text-orange-400 mr-3 animate-float" />
             <h2 className="text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-orange-200 to-orange-500">
-              Transformons vos idées en réalité
+              {selectedService 
+                ? `Transformons votre projet ${selectedService.label.toLowerCase()}`
+                : 'Transformons vos idées en réalité'
+              }
             </h2>
             <Sparkles className="w-7 h-7 text-orange-400 ml-3 animate-float delay-500" />
           </div>
 
           <p className="text-base md:text-lg text-gray-200 max-w-3xl mx-auto leading-relaxed">
-            Chaque grand projet commence par une conversation. Partagez votre vision avec nous
-            et découvrons ensemble comment créer des solutions digitales exceptionnelles.
+            {selectedService
+              ? `Chaque projet ${selectedService.label.toLowerCase()} commence par une conversation. Partagez votre vision avec nous et découvrons ensemble comment créer une solution exceptionnelle.`
+              : 'Chaque grand projet commence par une conversation. Partagez votre vision avec nous et découvrons ensemble comment créer des solutions digitales exceptionnelles.'
+            }
           </p>
+
+          {/* Indication visuelle quand un service est sélectionné */}
+          {selectedService && (
+            <div className="mt-4 inline-flex items-center space-x-2 bg-orange-500/10 px-4 py-2 rounded-full border border-orange-500/30 animate-pulse">
+              <span className="w-2 h-2 bg-orange-400 rounded-full animate-ping"></span>
+              <span className="text-sm text-orange-300">
+                Type de projet sélectionné : <span className="font-bold">{selectedService.label}</span>
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 max-w-7xl mx-auto">
@@ -411,7 +531,10 @@ const ContactSection = () => {
                 Contactez-nous
               </h3>
               <p className="text-sm text-gray-300">
-                Choisissez le canal qui vous convient le mieux. Nous sommes là pour répondre à vos questions.
+                {selectedService
+                  ? `Spécialistes en ${selectedService.label.toLowerCase()}, nous sommes prêts à vous accompagner.`
+                  : 'Choisissez le canal qui vous convient le mieux. Nous sommes là pour répondre à vos questions.'
+                }
               </p>
             </div>
 
@@ -434,9 +557,16 @@ const ContactSection = () => {
                       <h4 className="font-semibold text-white mb-1 group-hover:text-orange-200 transition-colors">
                         {info.title}
                       </h4>
-                      <p className="text-orange-300 font-medium text-sm mb-1">
-                        {info.content}
-                      </p>
+
+                      {/* Gestion string ou array pour le contenu */}
+                      <div className="text-orange-300 font-medium text-sm mb-1">
+                        {Array.isArray(info.content)
+                          ? info.content.map((line, i) => (
+                              <p key={i}>{line}</p>
+                            ))
+                          : <p>{info.content}</p>}
+                      </div>
+
                       <p className="text-gray-400 text-xs">
                         {info.description}
                       </p>
@@ -449,7 +579,10 @@ const ContactSection = () => {
 
           {/* Formulaire */}
           <div className="lg:col-span-2">
-            <ContactForm />
+            <ContactForm 
+              selectedService={selectedService} 
+              onServiceClear={handleServiceClear}
+            />
           </div>
         </div>
 
@@ -466,7 +599,10 @@ const ContactSection = () => {
                 🚀 Prêt pour le décollage ?
               </h3>
               <p className="text-gray-100/90 text-sm md:text-base mb-5">
-                Rejoignez les entreprises qui ont déjà fait confiance à ARIA pour transformer leur présence digitale.
+                {selectedService
+                  ? `Rejoignez les entreprises qui ont choisi ARIA pour leur projet ${selectedService.label.toLowerCase()}.`
+                  : 'Rejoignez les entreprises qui ont déjà fait confiance à ARIA pour transformer leur présence digitale.'
+                }
               </p>
               <div className="flex flex-wrap justify-center gap-3 text-xs md:text-sm">
                 <span className="px-4 py-2 bg-black/30 text-orange-200 rounded-full border border-orange-400/40">
@@ -478,6 +614,11 @@ const ContactSection = () => {
                 <span className="px-4 py-2 bg-black/30 text-orange-200 rounded-full border border-orange-400/40">
                   ✓ Support 7/7
                 </span>
+                {selectedService && (
+                  <span className="px-4 py-2 bg-orange-500/20 text-orange-200 rounded-full border border-orange-400/40 font-bold">
+                    ★ {selectedService.label}
+                  </span>
+                )}
               </div>
             </div>
           </div>
