@@ -85,22 +85,7 @@ const ServicesSection = () => {
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-64 h-64 bg-orange-600/25 blur-3xl rounded-full" />
         </div>
 
-        {/* Bande style “ligne d’arrivée” derrière les cartes */}
-        <div className="pointer-events-none absolute inset-x-0 top-40 bottom-12 flex items-center justify-center opacity-35">
-          <div className="relative w-[120%] max-w-6xl h-64">
-            <div className="absolute inset-y-8 left-1/2 -translate-x-1/2 w-full">
-              <div
-                className="w-full h-full rounded-3xl border border-orange-400/50 shadow-[0_0_80px_rgba(249,115,22,0.55)]"
-                style={{
-                  background:
-                    'repeating-linear-gradient(135deg, rgba(248,250,252,0.16) 0px, rgba(248,250,252,0.16) 14px, rgba(15,23,42,1) 14px, rgba(15,23,42,1) 28px)',
-                }}
-              />
-            </div>
-            <div className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-slate-950 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-slate-950 to-transparent" />
-          </div>
-        </div>
+        
 
         <div className="container mx-auto px-6 relative z-10">
           <div className="text-center mb-16">
