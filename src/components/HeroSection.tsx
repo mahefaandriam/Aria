@@ -353,7 +353,6 @@ const HeroSection = () => {
         <div className="relative z-10 w-full max-w-7xl mx-auto flex-1 flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-12 pt-8 sm:pt-12 lg:pt-16">
           {/* Colonne gauche : texte - RESPONSIVE */}
           <div className="w-full lg:w-auto lg:max-w-lg order-2 lg:order-1 space-y-4 sm:space-y-6 text-center lg:text-left">
-
             <h1 className="hero-title text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight tracking-tight animate-fade-in-left">
               Transformons vos{" "}
               <span className="relative text-orange-400">
@@ -497,7 +496,7 @@ const HeroSection = () => {
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-amber-400/30 rounded-xl -z-10 scale-0 group-hover:scale-100 blur-sm transition-all duration-700" />
 
-                    <div className="stat-card relative bg-slate-900/90 backdrop-blur-md rounded-xl p-4 border border-slate-700/60 hover:border-orange-400/50 transition-all duration-500 hover:bg-slate-800/90 shadow-lg hover:shadow-2xl hover:shadow-orange-500/40 hover:scale-[1.02]">
+                    <div className="stat-card relative bg-slate-900/20 backdrop-blur-sm rounded-xl p-4 border border-slate-500/30 hover:border-orange-400/30 transition-all duration-500 hover:bg-slate-900/25 shadow-none hover:shadow-md hover:shadow-orange-500/20 hover:scale-[1.01]">
                       <div className="mb-2 overflow-hidden flex items-baseline">
                         <span
                           className="stat-number text-2xl lg:text-3xl font-black bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 bg-clip-text text-transparent drop-shadow-xl group-hover:drop-shadow-2xl transition-all duration-500 block leading-none"
@@ -532,7 +531,7 @@ const HeroSection = () => {
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-amber-400/30 rounded-xl -z-10 scale-0 group-hover:scale-100 blur-sm transition-all duration-700" />
 
-                  <div className="stat-card relative w-full h-full bg-slate-900/90 backdrop-blur-md rounded-xl border border-slate-700/60 hover:border-orange-400/50 transition-all duration-500 hover:bg-slate-800/90 shadow-lg hover:shadow-xl hover:shadow-orange-500/40 hover:scale-105 flex flex-col justify-center items-center p-2.5">
+                  <div className="stat-card relative w-full h-full bg-slate-900/15 backdrop-blur-sm rounded-xl border border-slate-500/30 hover:border-orange-400/25 transition-all duration-500 hover:bg-slate-900/20 shadow-none hover:shadow-md hover:shadow-orange-500/20 hover:scale-102 flex flex-col justify-center items-center p-2.5">
                     <div className="mb-1.5 overflow-hidden w-full flex justify-center items-baseline">
                       <span
                         className="stat-number text-[22px] md:text-[26px] font-black bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 bg-clip-text text-transparent drop-shadow-lg group-hover:drop-shadow-xl transition-all duration-400 block leading-none"
