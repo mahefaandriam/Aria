@@ -54,11 +54,11 @@ const Header = () => {
   }, []);
 
   const mobileIcons = [
-    { href: "#accueil", icon: Home, label: "Accueil" },
-    { href: "#about", icon: User, label: "À Propos" },
-    { href: "#realisations", icon: Image, label: "Réalisation" },
-    { href: "#services", icon: Settings, label: "Services" },
-    { href: "#contact", icon: Mail, label: "Contact" },
+    { id: "accueil", href: "#accueil", icon: Home, label: "Accueil" },
+    { id: "about", href: "#about", icon: User, label: "À Propos" },
+    { id: "realisations", href: "#realisations", icon: Image, label: "Réalisation" },
+    { id: "services", href: "#services", icon: Settings, label: "Services" },
+    { id: "contact", href: "#contact", icon: Mail, label: "Contact" },
   ];
 
   return (
@@ -131,6 +131,52 @@ const Header = () => {
           }
         }
 
+        /* MOBILE ICONS - SEULE L'ICÔNE ACTIVE EST VISIBLE */
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: scale(0.8);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+
+        .mobile-icons-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: relative;
+          width: 60px;
+          height: 60px;
+        }
+
+        .mobile-icon-wrapper {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .mobile-icon-wrapper:not(.active) {
+          opacity: 0;
+          visibility: hidden;
+          transform: scale(0.5);
+        }
+
+        .mobile-icon-wrapper.active {
+          opacity: 1;
+          visibility: visible;
+          transform: scale(1);
+          animation: fadeIn 0.4s ease-out;
+        }
+
         .cta-premium {
           position: relative;
           background: linear-gradient(145deg, #f97316, #fb923c);
@@ -152,48 +198,46 @@ const Header = () => {
         }
 
         /* ❄️ GROS DÉPÔT PRINCIPAL */
-.cta-premium::before {
-  content: '';
-  position: absolute;
-  top: -18px;          /* encore un peu plus haut */
-  left: -5%;           /* déborde légèrement sur les côtés */
-  width: 110%;         /* dépasse le bouton */
-  height: 22px;        /* dépôt bien épais */
-  background:
-    radial-gradient(ellipse 100% 80% at 15% 0%, rgba(255,255,255,1) 40%, rgba(255,255,255,0.95) 70%, transparent 88%),
-    radial-gradient(ellipse 95% 75% at 55% 5%, rgba(255,255,255,1) 35%, rgba(255,255,255,0.92) 68%, transparent 85%),
-    radial-gradient(ellipse 85% 70% at 85% 8%, rgba(255,255,255,0.99) 30%, rgba(255,255,255,0.9) 62%, transparent 82%);
-  border-radius: 16px 16px 8px 8px;
-  filter: blur(0.3px) brightness(1.1);
-  opacity: 1;
-  pointer-events: none;
-  z-index: 12;
-  animation: snowDrift 6s ease-in-out infinite;
-}
+        .cta-premium::before {
+          content: '';
+          position: absolute;
+          top: -18px;          /* encore un peu plus haut */
+          left: -5%;           /* déborde légèrement sur les côtés */
+          width: 110%;         /* dépasse le bouton */
+          height: 22px;        /* dépôt bien épais */
+          background:
+            radial-gradient(ellipse 100% 80% at 15% 0%, rgba(255,255,255,1) 40%, rgba(255,255,255,0.95) 70%, transparent 88%),
+            radial-gradient(ellipse 95% 75% at 55% 5%, rgba(255,255,255,1) 35%, rgba(255,255,255,0.92) 68%, transparent 85%),
+            radial-gradient(ellipse 85% 70% at 85% 8%, rgba(255,255,255,0.99) 30%, rgba(255,255,255,0.9) 62%, transparent 82%);
+          border-radius: 16px 16px 8px 8px;
+          filter: blur(0.3px) brightness(1.1);
+          opacity: 1;
+          pointer-events: none;
+          z-index: 12;
+          animation: snowDrift 6s ease-in-out infinite;
+        }
 
-/* ❄️ COUCHE SUPPLÉMENTAIRE (EFFET TAS DE NEIGE) */
-.cta-premium::after {
-  content: '';
-  position: absolute;
-  top: -10px;
-  left: -3%;
-  width: 106%;
-  height: 16px;
-  background:
-    radial-gradient(12px 12px at 12% 30%, #fff 75%, transparent 85%),
-    radial-gradient(10px 10px at 35% 20%, #fff 80%, transparent 88%),
-    radial-gradient(9px 9px at 60% 25%, #fff 80%, transparent 88%),
-    radial-gradient(11px 11px at 80% 35%, #fff 78%, transparent 88%),
-    radial-gradient(8px 8px at 50% 55%, #fff 75%, transparent 88%);
-  border-radius: 50%;
-  filter: blur(0.2px);
-  opacity: 1;
-  pointer-events: none;
-  z-index: 13;
-  animation: snowDrift 7s ease-in-out infinite reverse;
-}
-
-
+        /* ❄️ COUCHE SUPPLÉMENTAIRE (EFFET TAS DE NEIGE) */
+        .cta-premium::after {
+          content: '';
+          position: absolute;
+          top: -10px;
+          left: -3%;
+          width: 106%;
+          height: 16px;
+          background:
+            radial-gradient(12px 12px at 12% 30%, #fff 75%, transparent 85%),
+            radial-gradient(10px 10px at 35% 20%, #fff 80%, transparent 88%),
+            radial-gradient(9px 9px at 60% 25%, #fff 80%, transparent 88%),
+            radial-gradient(11px 11px at 80% 35%, #fff 78%, transparent 88%),
+            radial-gradient(8px 8px at 50% 55%, #fff 75%, transparent 88%);
+          border-radius: 50%;
+          filter: blur(0.2px);
+          opacity: 1;
+          pointer-events: none;
+          z-index: 13;
+          animation: snowDrift 7s ease-in-out infinite reverse;
+        }
 
         /* La neige suit légèrement le hover */
         .cta-premium:hover::before {
@@ -374,12 +418,15 @@ const Header = () => {
         }
 
         .mobile-icon {
-          width: 24px;
-          height: 24px;
+          width: 60px;
+          height: 60px;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           cursor: pointer;
-          padding: 4px;
-          border-radius: 8px;
+          padding: 12px;
+          border-radius: 16px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
         }
         .mobile-icon:hover {
           transform: scale(1.15) rotate(8deg);
@@ -512,53 +559,49 @@ const Header = () => {
               </button>
             </div>
 
-            {/* Icône + burger mobile - ESPACEMENT MAXIMUM */}
+            {/* Icône mobile - SEULE L'ICÔNE ACTIVE EST VISIBLE */}
             <div className="lg:hidden flex items-center space-x-14">
-              {" "}
-              {/* space-x-4 → space-x-6 */}
-              <div className="flex items-center space-x-12">
-                {" "}
-                {/* space-x-3 → space-x-4 */}
+              <div className="mobile-icons-container">
                 {mobileIcons.map((item) => {
                   const IconComponent = item.icon;
                   return (
-                    <a
-                      key={item.href}
-                      href={item.href}
-                      className={`mobile-icon group p-4 ${
-                        /* p-3 → p-4 */
-                        activeSection === item.href.substring(1) ? "active" : ""
+                    <div
+                      key={item.id}
+                      className={`mobile-icon-wrapper ${
+                        activeSection === item.id ? "active" : ""
                       }`}
                     >
-                      <IconComponent
-                        className={`transition-all duration-300 w-7 h-7 ${
-                          /* w-6 → w-7 */
-                          activeSection === item.href.substring(1)
-                            ? "text-orange-400"
-                            : scrolled
-                            ? "text-orange-300 hover:text-orange-200"
-                            : "text-white hover:text-orange-300"
+                      <a
+                        href={item.href}
+                        className={`mobile-icon group ${
+                          activeSection === item.id ? "active" : ""
                         }`}
-                      />
-                    </a>
+                      >
+                        <IconComponent
+                          className={`transition-all duration-300 w-8 h-8 ${
+                            activeSection === item.id
+                              ? "text-orange-400"
+                              : "text-white"
+                          }`}
+                        />
+                      </a>
+                    </div>
                   );
                 })}
               </div>
               <button
-                className="relative w-14 h-14 flex flex-col justify-center items-center rounded-2xl transition-all duration-300 hover:bg-orange-500/40 p-3 ml-4 border-2 border-orange-500/50 backdrop-blur-sm shadow-xl" /* w-12→w-14, h-12→h-14, p-2→p-3, ml-2→ml-4, border→border-2, rounded-lg→rounded-2xl */
+                className="relative w-14 h-14 flex flex-col justify-center items-center rounded-2xl transition-all duration-300 hover:bg-orange-500/40 p-3 ml-4 border-2 border-orange-500/50 backdrop-blur-sm shadow-xl"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
                 {mobileMenuOpen ? (
                   <X
                     className={`w-8 h-8 transition-colors ${
-                      /* w-7 → w-8 */
                       scrolled ? "text-orange-400" : "text-white"
                     }`}
                   />
                 ) : (
                   <Menu
                     className={`w-8 h-8 transition-colors ${
-                      /* w-7 → w-8 */
                       scrolled ? "text-orange-400" : "text-white"
                     }`}
                   />

@@ -1,6 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Rocket } from "lucide-react";
+import {
+  Rocket,
+  Sparkles,
+  Zap,
+  Target,
+  CheckCircle,
+  Star,
+  Award,
+  Palette,
+  Code,
+  TrendingUp,
+} from "lucide-react";
 import { useParallax } from "@/hooks/useScrollAnimation";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -22,63 +33,166 @@ const HeroSection = () => {
   const [typedWord, setTypedWord] = useState("");
   const sectionRef = useRef<HTMLElement | null>(null);
   const logoCardRef = useRef<HTMLDivElement>(null);
+  const particlesRef = useRef<HTMLDivElement>(null);
   const { offset } = useParallax(0.3);
   const animationRef = useRef<gsap.core.Timeline | null>(null);
+
+  // Créer des particules flottantes
+  useEffect(() => {
+    if (!particlesRef.current) return;
+
+    const particlesContainer = particlesRef.current;
+    const particlesCount = 15;
+
+    for (let i = 0; i < particlesCount; i++) {
+      const particle = document.createElement("div");
+      particle.className = "floating-particle";
+
+      // Position aléatoire
+      const left = Math.random() * 100;
+      const top = Math.random() * 100;
+      const size = 2 + Math.random() * 3;
+      const duration = 3 + Math.random() * 4;
+      const delay = Math.random() * 2;
+
+      particle.style.cssText = `
+        position: absolute;
+        left: ${left}%;
+        top: ${top}%;
+        width: ${size}px;
+        height: ${size}px;
+        background: linear-gradient(135deg, rgba(249,115,22,0.3), rgba(59,130,246,0.3));
+        border-radius: 50%;
+        opacity: ${0.3 + Math.random() * 0.4};
+        animation: float-particle ${duration}s ease-in-out ${delay}s infinite;
+      `;
+
+      particlesContainer.appendChild(particle);
+    }
+
+    return () => {
+      if (particlesContainer) {
+        particlesContainer.innerHTML = "";
+      }
+    };
+  }, []);
 
   // Animation de la carte logo et des stats
   useGSAP(
     () => {
-      // Animation de la carte logo
+      // Animation spectaculaire de la carte logo
       if (logoCardRef.current) {
+        const logoCard = logoCardRef.current;
+
+        // Reset pour animation
+        gsap.set(logoCard, {
+          opacity: 0,
+          scale: 0.8,
+          y: 50,
+          rotationX: 10,
+          rotationY: -10,
+        });
+
+        // Animation principale de la carte
+        gsap.to(logoCard, {
+          opacity: 1,
+          scale: 1,
+          y: 0,
+          rotationX: 0,
+          rotationY: 0,
+          duration: 1.6,
+          delay: 0.5,
+          ease: "elastic.out(1, 0.5)",
+        });
+
+        // Animation du halo
+        const halo = logoCard.querySelector(".logo-halo");
+        if (halo) {
+          gsap.fromTo(
+            halo,
+            { scale: 0.8, opacity: 0 },
+            {
+              scale: 1,
+              opacity: 0.7,
+              duration: 2,
+              ease: "power2.out",
+              delay: 0.8,
+            }
+          );
+        }
+
+        // Animation des badges de service avec stagger
+        const badges = logoCard.querySelectorAll(".service-badge");
         gsap.fromTo(
-          logoCardRef.current,
+          badges,
           {
+            y: 20,
             opacity: 0,
-            x: 50,
-            scale: 0.9,
-            rotation: -5,
+            scale: 0.8,
           },
           {
+            y: 0,
             opacity: 1,
-            x: 0,
             scale: 1,
-            rotation: 0,
-            duration: 1.2,
-            delay: 0.3,
+            duration: 0.8,
+            stagger: 0.15,
+            delay: 1.2,
             ease: "back.out(1.7)",
           }
         );
+
+        // Animation du CTA
+        const ctaButton = logoCard.querySelector(".logo-cta-button");
+        if (ctaButton) {
+          gsap.fromTo(
+            ctaButton,
+            {
+              y: 30,
+              opacity: 0,
+            },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 1,
+              delay: 1.8,
+              ease: "power2.out",
+            }
+          );
+        }
+
+        // Animation hover continue subtile
+        gsap.to(logoCard, {
+          y: -5,
+          duration: 2,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+          delay: 2.5,
+        });
       }
 
-      // Créer une timeline pour l'animation en boucle des stats
+      // Animation des stats (identique)
       animationRef.current = gsap.timeline({
-        repeat: -1, // Répétition infinie
-        delay: 1, // Délai initial pour laisser la carte logo apparaître
+        repeat: -1,
+        delay: 2,
       });
 
-      // Animer les cartes desktop
       const desktopCards = gsap.utils.toArray(".desktop-stat .stat-card");
       const mobileCards = gsap.utils.toArray(".mobile-stat .stat-card");
 
-      // Initialiser toutes les cartes de stats comme invisibles
       gsap.set([...desktopCards, ...mobileCards], {
         opacity: 0,
         scale: 0.8,
         y: 20,
       });
 
-      // Durées pour l'animation
       const appearDuration = 0.7;
-      const stayDuration = 0.8; // Temps entre chaque apparition
+      const stayDuration = 0.8;
       const disappearDuration = 0.6;
-      const allStayDuration = 1.5; // Temps où toutes sont visibles
+      const allStayDuration = 1.5;
 
-      // ===== PHASE 1 : APPARITION SÉQUENTIELLE =====
-      // Carte 1 (Projets) - index 0
       desktopCards.forEach((card: any, index) => {
         const startTime = index * (appearDuration + stayDuration);
-
-        // Apparition
         animationRef.current?.to(
           card,
           {
@@ -91,7 +205,6 @@ const HeroSection = () => {
           startTime
         );
 
-        // Animation du compteur
         const numberElement = card.querySelector(".stat-number");
         if (numberElement) {
           animationRef.current?.to(
@@ -107,10 +220,8 @@ const HeroSection = () => {
         }
       });
 
-      // Apparition mobile séquentielle
       mobileCards.forEach((card: any, index) => {
         const startTime = index * (appearDuration + stayDuration);
-
         animationRef.current?.to(
           card,
           {
@@ -138,16 +249,12 @@ const HeroSection = () => {
         }
       });
 
-      // Temps où toutes les cartes sont visibles
       const allVisibleTime =
         2 * (appearDuration + stayDuration) + allStayDuration;
 
-      // ===== PHASE 2 : DISPARITION SÉQUENTIELLE =====
-      // Disparition dans le même ordre
       desktopCards.forEach((card: any, index) => {
         const disappearTime =
           allVisibleTime + index * (disappearDuration + stayDuration);
-
         animationRef.current?.to(
           card,
           {
@@ -164,7 +271,6 @@ const HeroSection = () => {
       mobileCards.forEach((card: any, index) => {
         const disappearTime =
           allVisibleTime + index * (disappearDuration + stayDuration);
-
         animationRef.current?.to(
           card,
           {
@@ -178,17 +284,13 @@ const HeroSection = () => {
         );
       });
 
-      // ===== PHASE 3 : PAUSE AVANT DE RECOMMENCER =====
       const totalCycleTime =
         allVisibleTime +
         2 * (disappearDuration + stayDuration) +
         disappearDuration;
       animationRef.current?.to({}, { duration: 1 }, totalCycleTime);
-
-      // Démarrer l'animation des stats
       animationRef.current?.play();
 
-      // Cleanup
       return () => {
         if (animationRef.current) {
           animationRef.current.kill();
@@ -198,7 +300,7 @@ const HeroSection = () => {
     { scope: sectionRef }
   );
 
-  // Rotation des mots
+  // Rotation des mots (identique)
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentWordIndex((prev) => (prev + 1) % dynamicWords.length);
@@ -207,7 +309,6 @@ const HeroSection = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Effet typewriter sur le mot seulement
   useEffect(() => {
     const currentWord = dynamicWords[currentWordIndex];
     let index = 0;
@@ -221,7 +322,6 @@ const HeroSection = () => {
     return () => clearInterval(typingInterval);
   }, [currentWordIndex]);
 
-  // Suivi de la souris pour le halo
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       const rect = sectionRef.current?.getBoundingClientRect();
@@ -241,9 +341,30 @@ const HeroSection = () => {
   };
 
   const statsData = [
-    { number: "40", label: "Projets", suffix: "+" },
-    { number: "100", label: "Satisfaction", suffix: "%" },
-    { number: "7", label: "Support", suffix: "/7" },
+    { number: "40", label: "Projets", suffix: "+", icon: Award },
+    { number: "100", label: "Satisfaction", suffix: "%", icon: Star },
+    { number: "7", label: "Support", suffix: "/7", icon: Zap },
+  ];
+
+  const services = [
+    {
+      icon: Palette,
+      label: "UI/UX Design",
+      color: "from-purple-400 to-pink-400",
+      bg: "bg-purple-500/10",
+    },
+    {
+      icon: Code,
+      label: "Dev Fullstack",
+      color: "from-blue-400 to-cyan-400",
+      bg: "bg-blue-500/10",
+    },
+    {
+      icon: TrendingUp,
+      label: "Stratégie SEO",
+      color: "from-green-400 to-emerald-400",
+      bg: "bg-green-500/10",
+    },
   ];
 
   return (
@@ -255,17 +376,180 @@ const HeroSection = () => {
             radial-gradient(circle at 100% 100%, rgba(59,130,246,0.25), transparent 55%),
             linear-gradient(to right, #020617, #020617);
         }
-        .hero-glass {
-          background: linear-gradient(135deg, rgba(15,23,42,0.85), rgba(15,23,42,0.6));
-          backdrop-filter: blur(18px);
-          border: 1px solid rgba(148,163,184,0.25);
+        
+        /* NOUVEAUX STYLES POUR LA CARTE LOGO ASSOMBRIE */
+        .logo-card-premium {
+          backdrop-filter: blur(32px);
+          -webkit-backdrop-filter: blur(32px);
+          border: 2px solid transparent;
+          border-radius: 32px;
+          position: relative;
+          overflow: hidden;
+          transform-style: preserve-3d;
+          perspective: 1000px;
+          box-shadow: 
+            0 25px 50px -12px rgba(0, 0, 0, 0.7),
+            inset 0 1px 0 rgba(255, 255, 255, 0.05),
+            0 0 0 1px rgba(255, 255, 255, 0.02);
         }
-        .hero-orbit {
-          background: conic-gradient(from 180deg, rgba(249,115,22,0.3), transparent, rgba(59,130,246,0.3), transparent, rgba(249,115,22,0.3));
+        .logo-card-premium::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  
+  border-radius: 34px;
+  z-index: -1;
+  opacity: 0.8; /* Augmenté de 0.6 à 0.8 */
+  filter: blur(25px); /* Augmenté de 20px à 25px */
+  animation: border-glow 4s ease-in-out infinite;
+}
+
+.logo-card-premium::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+ 
+  border-radius: 30px;
+  z-index: -1;
+  opacity: 0.9; /* Augmenté de 0.8 à 0.9 */
+  filter: blur(15px); /* Ajout d'un flou pour diffuser la lumière */
+}
+        
+        .logo-inner-glow {
+          position: absolute;
+          inset: 1px;
+          background: radial-gradient(
+            circle at 50% 50%,
+            rgba(249, 115, 22, 0.12) 0%,
+            transparent 70%
+          );
+          border-radius: 30px;
+          z-index: 1;
+          pointer-events: none;
+          opacity: 0.9;
         }
+        
+        .logo-halo {
+          position: absolute;
+          inset: -10px;
+          background: radial-gradient(
+            circle at 50% 50%,
+            rgba(249, 115, 22, 0.3) 0%,
+            rgba(59, 130, 246, 0.15) 30%,
+            transparent 70%
+          );
+          border-radius: 40px;
+          filter: blur(40px);
+          z-index: -2;
+          opacity: 0;
+        }
+        
+        .logo-sparkle {
+          position: absolute;
+          width: 3px;
+          height: 3px;
+          background: rgba(255, 255, 255, 0.8);
+          border-radius: 50%;
+          filter: blur(1px);
+          animation: sparkle-twinkle 2s infinite;
+        }
+        
+        .service-badge {
+          position: relative;
+          overflow: hidden;
+          transform-style: preserve-3d;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .service-badge::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, rgba(255,255,255,0.05), transparent);
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+        
+        .service-badge:hover {
+          transform: translateY(-4px) scale(1.05);
+        }
+        
+        .service-badge:hover::before {
+          opacity: 1;
+        }
+        
+        .floating-particles {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          z-index: 1;
+        }
+        
+        /* ANIMATIONS */
+        @keyframes border-glow {
+          0%, 100% { opacity: 0.5; filter: blur(20px); }
+          50% { opacity: 0.7; filter: blur(25px); }
+        }
+        
+        @keyframes sparkle-twinkle {
+          0%, 100% { opacity: 0.1; transform: scale(1); }
+          50% { opacity: 0.3; transform: scale(1.2); }
+        }
+        
+        @keyframes float-particle {
+          0%, 100% { 
+            transform: translate(0, 0) rotate(0deg); 
+            opacity: 0.2;
+          }
+          25% { 
+            transform: translate(10px, -15px) rotate(90deg); 
+            opacity: 0.4;
+          }
+          50% { 
+            transform: translate(5px, -30px) rotate(180deg); 
+            opacity: 0.2;
+          }
+          75% { 
+            transform: translate(-5px, -20px) rotate(270deg); 
+            opacity: 0.4;
+          }
+        }
+        
+        @keyframes logo-float {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          33% { transform: translateY(-6px) rotate(0.3deg); }
+          66% { transform: translateY(3px) rotate(-0.3deg); }
+        }
+        
+        .logo-image-container {
+          position: relative;
+          filter: drop-shadow(0 0 25px rgba(249, 115, 22, 0.6));
+          animation: logo-float 6s ease-in-out infinite;
+        }
+        
+        .logo-image-container::after {
+          content: '';
+          position: absolute;
+          inset: -10px;
+          background: radial-gradient(
+            circle at center,
+            rgba(249, 115, 22, 0.3) 0%,
+            transparent 70%
+          );
+          filter: blur(15px);
+          z-index: -1;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+        
+        .logo-image-container:hover::after {
+          opacity: 0.6;
+        }
+        
         .cursor-glow {
-          background: radial-gradient(circle at center, rgba(249,115,22,0.25), transparent 60%);
+          background: radial-gradient(circle at center, rgba(249,115,22,0.2), transparent 60%);
         }
+        
         .typewriter-word {
           border-right: 2px solid #f97316;
           white-space: nowrap;
@@ -273,32 +557,29 @@ const HeroSection = () => {
           animation: blinkCaret 0.9s step-end infinite;
         }
         
-        /* État initial des cartes de stats - cachées */
-        .desktop-stat .stat-card,
-        .mobile-stat .stat-card {
-          opacity: 0;
-          transform: scale(0.8) translateY(20px);
-          will-change: transform, opacity;
-        }
-        
         @keyframes blinkCaret {
           0%, 100% { border-color: transparent; }
           50% { border-color: #f97316; }
         }
         
-        @keyframes float {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          33% { transform: translateY(-8px) rotate(0.5deg); }
-          66% { transform: translateY(4px) rotate(-0.5deg); }
+        @keyframes subtle-pulse {
+          0%, 100% { opacity: 0.3; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(1.05); }
         }
         
-        .animate-float-loop {
-          animation: float 5s ease-in-out infinite;
+        @keyframes badge-icon-float {
+          0%, 100% { transform: translateY(0) rotate(0deg); }
+          50% { transform: translateY(-2px) rotate(3deg); }
+        }
+        
+        .badge-icon {
+          animation: badge-icon-float 3s ease-in-out infinite;
         }
         
         @media (max-width: 1024px) {
           .stats-desktop { display: none !important; }
         }
+        
         @media (max-width: 768px) {
           #accueil {
             min-height: 100dvh;
@@ -307,8 +588,18 @@ const HeroSection = () => {
           }
           .hero-title { font-size: 2rem !important; line-height: 1.1 !important; }
           .hero-subtitle { font-size: 1rem !important; }
-          .logo-card { max-width: 280px !important; height: 320px !important; }
+          .logo-card-premium { 
+            max-width: 300px !important; 
+            height: 360px !important;
+            padding: 1.25rem !important;
+          }
+          .service-badges { grid-template-columns: repeat(3, 1fr) !important; }
+          .logo-image-container { 
+            width: 100px !important;
+            height: 100px !important;
+          }
         }
+        
         @media (max-width: 640px) {
           .hero-section { padding-top: 2rem; padding-bottom: 2rem; }
           .hero-title { font-size: 1.75rem !important; }
@@ -316,6 +607,7 @@ const HeroSection = () => {
             width: 100% !important; 
             margin-bottom: 0.75rem !important; 
           }
+          .service-badges { grid-template-columns: repeat(3, 1fr) !important; gap: 0.4rem !important; }
         }
       `}</style>
 
@@ -346,12 +638,12 @@ const HeroSection = () => {
           }}
         />
 
-        {/* Orbes décoratives responsive */}
+        {/* Orbes décoratives */}
         <div className="pointer-events-none hero-orbit absolute -right-4 sm:-right-20 md:-right-40 -top-16 sm:-top-20 md:-top-40 w-32 sm:w-48 md:w-[420px] h-32 sm:h-48 md:h-[420px] rounded-full opacity-30 sm:opacity-40 blur-xl sm:blur-3xl animate-float-slow" />
         <div className="pointer-events-none hero-orbit absolute -left-8 sm:-left-20 md:-left-32 bottom-[-40px] sm:bottom-[-60px] md:bottom-[-120px] w-24 sm:w-40 md:w-[360px] h-24 sm:h-40 md:h-[360px] rounded-full opacity-20 sm:opacity-30 blur-xl sm:blur-3xl animate-float-slow" />
 
         <div className="relative z-10 w-full max-w-7xl mx-auto flex-1 flex flex-col lg:flex-row lg:items-center gap-8 lg:gap-12 pt-8 sm:pt-12 lg:pt-16">
-          {/* Colonne gauche : texte - RESPONSIVE */}
+          {/* Colonne gauche : texte */}
           <div className="w-full lg:w-auto lg:max-w-lg order-2 lg:order-1 space-y-4 sm:space-y-6 text-center lg:text-left">
             <h1 className="hero-title text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight tracking-tight animate-fade-in-left">
               Transformons vos{" "}
@@ -410,151 +702,190 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {/* Colonne droite : carte logo + STATS ANIMÉES AUTOMATIQUES */}
+          {/* Colonne droite : carte logo assombrie + STATS */}
           <div className="w-full lg:w-auto order-1 lg:order-2 flex flex-col lg:flex-row items-center lg:items-start gap-6 lg:gap-8">
-            {/* Carte logo - RESPONSIVE */}
+            {/* CARTE LOGO ASSOMBRIE */}
             <div className="w-full lg:w-auto flex justify-center lg:justify-end flex-1 max-w-sm sm:max-w-md lg:max-w-none">
               <div
                 ref={logoCardRef}
-                className="logo-card hero-glass rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 lg:p-10 w-full shadow-[0_12px_40px_rgba(15,23,42,0.8)] sm:shadow-[0_18px_60px_rgba(15,23,42,0.8)] border-slate-700/40 flex flex-col justify-center"
+                className="logo-card-premium relative p-6 sm:p-8 md:p-10 w-full group transition-all duration-500 hover:shadow-2xl hover:shadow-orange-500/20"
                 style={{ opacity: 0 }}
               >
-                <div className="flex flex-col items-center gap-3 sm:gap-4 md:gap-6 flex-1 justify-center">
-                  <div className="relative w-28 sm:w-32 md:w-40 lg:w-44 xl:w-48 h-28 sm:h-32 md:h-40 lg:h-44 xl:h-48 mx-auto">
-                    <div className="absolute inset-0 rounded-full bg-orange-500/30 blur-xl" />
-                    <img
-                      src="/images/aria-logo.png"
-                      alt="ARIA Logo"
-                      className="relative w-full h-full object-contain drop-shadow-lg sm:drop-shadow-[0_0_40px_rgba(249,115,22,0.85)]"
-                    />
+                {/* Particules flottantes */}
+                <div ref={particlesRef} className="floating-particles" />
+
+                {/* Effets de lumière */}
+                <div className="logo-halo" />
+                <div className="logo-inner-glow" />
+
+                {/* Étincelles décoratives */}
+                <div
+                  className="logo-sparkle"
+                  style={{ top: "10%", left: "15%", animationDelay: "0s" }}
+                />
+                <div
+                  className="logo-sparkle"
+                  style={{ top: "20%", right: "20%", animationDelay: "0.5s" }}
+                />
+                <div
+                  className="logo-sparkle"
+                  style={{ bottom: "30%", left: "25%", animationDelay: "1s" }}
+                />
+                <div
+                  className="logo-sparkle"
+                  style={{
+                    bottom: "15%",
+                    right: "30%",
+                    animationDelay: "1.5s",
+                  }}
+                />
+
+                <div className="flex flex-col items-center gap-4 sm:gap-5 md:gap-6 flex-1 justify-center relative z-10">
+                  {/* Logo avec animation flottante */}
+                  <div className="logo-image-container">
+                    <div className="relative w-28 sm:w-32 md:w-36 lg:w-40 xl:w-44 h-28 sm:h-32 md:h-36 lg:h-40 xl:h-44 mx-auto">
+                      <div className="absolute inset-0 bg-gradient-to-r from-orange-500/25 via-amber-500/15 to-orange-500/25 rounded-full blur-xl scale-105 opacity-50 animate-subtle-pulse" />
+                      <img
+                        src="/images/aria-logo.png"
+                        alt="ARIA Logo"
+                        className="relative w-full h-full object-contain"
+                      />
+                    </div>
                   </div>
 
+                  {/* Titre et description */}
                   <div className="w-full space-y-2 sm:space-y-3 text-center">
-                    <h2 className="text-base sm:text-lg md:text-xl font-semibold text-slate-50">
-                      Studio ARIA
+                    <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-100 tracking-tight">
+                      Studio{" "}
+                      <span className="bg-gradient-to-r from-orange-400 to-amber-300 bg-clip-text text-transparent">
+                        ARIA
+                      </span>
                     </h2>
-                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed px-2">
-                      Design, développement web, identité de marque et
-                      accompagnement digital.
+                    <p className="text-xs sm:text-sm text-slate-400 leading-relaxed px-2 max-w-xs mx-auto">
+                      Excellence digitale : design, développement & stratégie
+                      sur mesure
                     </p>
                   </div>
 
-                  <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 text-left text-xs sm:text-sm text-slate-300">
-                    <div className="rounded-xl sm:rounded-2xl bg-slate-900/60 border border-slate-700/60 p-2 sm:p-3">
-                      <p className="font-semibold text-orange-300 mb-1 text-xs sm:text-sm">
-                        Sites & Apps
-                      </p>
-                      <p className="text-[10px] sm:text-xs">
-                        Interfaces modernes et performantes.
-                      </p>
-                    </div>
-                    <div className="rounded-xl sm:rounded-2xl bg-slate-900/60 border border-slate-700/60 p-2 sm:p-3">
-                      <p className="font-semibold text-orange-300 mb-1 text-xs sm:text-sm">
-                        Stratégie digitale
-                      </p>
-                      <p className="text-[10px] sm:text-xs">
-                        Conseil UX et contenus résultats.
-                      </p>
-                    </div>
-                  </div>
-
+                  {/* CTA premium assombri */}
                   <button
                     onClick={() => handleScrollTo("contact")}
                     className="
-                      mt-3 sm:mt-2 w-full sm:w-auto
+                      logo-cta-button
+                      mt-2 sm:mt-4 w-full
                       inline-flex items-center justify-center
-                      text-xs sm:text-sm font-medium
-                      px-4 sm:px-5 md:px-6 py-2 sm:py-2.5
-                      rounded-full relative
-                      bg-gradient-to-r from-orange-500/15 via-orange-400/10 to-amber-300/15
-                      border border-orange-300/70
-                      text-orange-100 shadow-[0_0_0_1px_rgba(248,250,252,0.06)]
-                      hover:from-orange-500/25 hover:via-amber-400/20 hover:to-yellow-300/25
-                      hover:text-white hover:shadow-lg sm:hover:shadow-[0_12px_30px_rgba(251,146,60,0.45)]
-                      backdrop-blur-md transition-all duration-300 group
+                      text-sm sm:text-base font-semibold
+                      px-4 sm:px-5 py-2.5 sm:py-3
+                      rounded-xl relative
+                      bg-gradient-to-r from-orange-500/25 via-orange-400/15 to-amber-300/25
+                      border border-orange-500/40
+                      text-slate-100 shadow-lg
+                      hover:from-orange-500/35 hover:via-amber-400/25 hover:to-yellow-300/35
+                      hover:shadow-xl hover:shadow-orange-500/30
+                      hover:border-orange-400/60
+                      hover:text-white
+                      backdrop-blur-md transition-all duration-300 group overflow-hidden
                     "
                   >
-                    <span className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 bg-orange-500/10 blur-md sm:blur-xl transition-opacity duration-300 pointer-events-none" />
-                    <span className="relative flex items-center gap-1.5 sm:gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-orange-300 animate-pulse shadow-sm sm:shadow-[0_0_10px_rgba(253,186,116,0.9)] flex-shrink-0" />
-                      <span>Discuter de votre projet</span>
+                    {/* Effet de fond animé */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-orange-500/0 via-orange-400/10 to-orange-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+
+                    {/* Points d'effet */}
+                    <div className="absolute -top-1 -left-1 w-2 h-2 bg-orange-300/70 rounded-full blur-sm" />
+                    <div className="absolute -bottom-1 -right-1 w-2 h-2 bg-amber-300/70 rounded-full blur-sm" />
+
+                    <span className="relative flex items-center gap-2 sm:gap-3">
+                      <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-300 group-hover:scale-110 transition-transform duration-300" />
+                      <span className="font-bold">Démarrer mon projet</span>
                     </span>
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* ✅ STATS DESKTOP - Animation automatique en boucle (séquentielle) */}
+            {/* STATS DESKTOP */}
             <div className="stats-desktop hidden lg:flex lg:flex-col lg:items-end lg:justify-center lg:ml-8 w-[180px] h-[380px]">
-              <div className="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-br from-orange-400/40 to-amber-400/40 rounded-xl blur-lg shadow-lg shadow-orange-500/50" />
+              <div className="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-br from-orange-400/30 to-amber-400/30 rounded-xl blur-lg shadow-lg shadow-orange-500/40" />
 
               <div className="flex flex-col items-end gap-5 flex-1 justify-center space-y-1 relative z-10">
-                {statsData.map((stat, index) => (
-                  <div
-                    key={stat.label}
-                    className="desktop-stat group relative w-full py-3 px-4"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-amber-400/30 rounded-xl -z-10 scale-0 group-hover:scale-100 blur-sm transition-all duration-700" />
+                {statsData.map((stat, index) => {
+                  const Icon = stat.icon;
+                  return (
+                    <div
+                      key={stat.label}
+                      className="desktop-stat group relative w-full py-3 px-4"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-orange-400/15 to-amber-400/25 rounded-xl -z-10 scale-0 group-hover:scale-100 blur-sm transition-all duration-700" />
 
-                    <div className="stat-card relative bg-slate-900/20 backdrop-blur-sm rounded-xl p-4 border border-slate-500/30 hover:border-orange-400/30 transition-all duration-500 hover:bg-slate-900/25 shadow-none hover:shadow-md hover:shadow-orange-500/20 hover:scale-[1.01]">
-                      <div className="mb-2 overflow-hidden flex items-baseline">
-                        <span
-                          className="stat-number text-2xl lg:text-3xl font-black bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 bg-clip-text text-transparent drop-shadow-xl group-hover:drop-shadow-2xl transition-all duration-500 block leading-none"
-                          data-value={stat.number}
-                        >
-                          0
-                        </span>
-                        <span className="text-2xl lg:text-3xl font-black bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 bg-clip-text text-transparent drop-shadow-xl">
-                          {stat.suffix}
-                        </span>
+                      <div className="stat-card relative bg-slate-900/25 backdrop-blur-sm rounded-xl p-4 border border-slate-600/40 hover:border-orange-400/25 transition-all duration-500 hover:bg-slate-900/30 shadow-none hover:shadow-md hover:shadow-orange-500/20 hover:scale-[1.01]">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Icon className="w-4 h-4 text-orange-400/90" />
+                          <div className="overflow-hidden flex items-baseline">
+                            <span
+                              className="stat-number text-2xl lg:text-3xl font-black bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 bg-clip-text text-transparent drop-shadow-xl group-hover:drop-shadow-2xl transition-all duration-500 block leading-none"
+                              data-value={stat.number}
+                            >
+                              0
+                            </span>
+                            <span className="text-2xl lg:text-3xl font-black bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 bg-clip-text text-transparent drop-shadow-xl">
+                              {stat.suffix}
+                            </span>
+                          </div>
+                        </div>
+
+                        <p className="text-xs uppercase tracking-wider font-semibold text-slate-400 group-hover:text-slate-300 group-hover:translate-x-1 transition-all duration-400 origin-left">
+                          {stat.label}
+                        </p>
+
+                        <div className="absolute bottom-1 left-4 right-4 h-px bg-gradient-to-r from-orange-400/40 to-amber-400/40 rounded-full scale-x-0 origin-left opacity-0 group-hover:opacity-100 group-hover:scale-x-100 transition-all duration-700 mx-auto" />
                       </div>
-
-                      <p className="text-xs uppercase tracking-wider font-semibold text-slate-300 group-hover:text-slate-100 group-hover:translate-x-1 transition-all duration-400 origin-left">
-                        {stat.label}
-                      </p>
-
-                      <div className="absolute bottom-1 left-4 right-4 h-px bg-gradient-to-r from-orange-400/60 to-amber-400/60 rounded-full scale-x-0 origin-left opacity-0 group-hover:opacity-100 group-hover:scale-x-100 transition-all duration-700 mx-auto" />
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
 
-                <div className="absolute -bottom-3 -right-3 w-4 h-4 bg-orange-400/50 rounded-full blur-sm opacity-70" />
+                <div className="absolute -bottom-3 -right-3 w-4 h-4 bg-orange-400/40 rounded-full blur-sm" />
               </div>
             </div>
 
-            {/* ✅ STAT MOBILE HORIZONTAL - Animation automatique en boucle (séquentielle) */}
-            <div className="stats-mobile lg:hidden flex flex-row items-center justify-center gap-4 w-full h-[110px] p-3 mt-6">
-              {statsData.map((stat, index) => (
-                <div
-                  key={stat.label}
-                  className="mobile-stat group relative w-[80px] h-[85px] flex flex-col justify-center items-center flex-1"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-orange-400/20 to-amber-400/30 rounded-xl -z-10 scale-0 group-hover:scale-100 blur-sm transition-all duration-700" />
+            {/* STAT MOBILE HORIZONTAL */}
+            <div className="stats-mobile lg:hidden flex flex-row items-center justify-center gap-3 sm:gap-4 w-full h-[100px] p-3 mt-4">
+              {statsData.map((stat, index) => {
+                const Icon = stat.icon;
+                return (
+                  <div
+                    key={stat.label}
+                    className="mobile-stat group relative w-[75px] sm:w-[80px] h-[80px] flex flex-col justify-center items-center flex-1"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-orange-400/15 to-amber-400/25 rounded-xl -z-10 scale-0 group-hover:scale-100 blur-sm transition-all duration-700" />
 
-                  <div className="stat-card relative w-full h-full bg-slate-900/15 backdrop-blur-sm rounded-xl border border-slate-500/30 hover:border-orange-400/25 transition-all duration-500 hover:bg-slate-900/20 shadow-none hover:shadow-md hover:shadow-orange-500/20 hover:scale-102 flex flex-col justify-center items-center p-2.5">
-                    <div className="mb-1.5 overflow-hidden w-full flex justify-center items-baseline">
-                      <span
-                        className="stat-number text-[22px] md:text-[26px] font-black bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 bg-clip-text text-transparent drop-shadow-lg group-hover:drop-shadow-xl transition-all duration-400 block leading-none"
-                        data-value={stat.number}
-                      >
-                        0
-                      </span>
-                      <span className="text-[22px] md:text-[26px] font-black bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 bg-clip-text text-transparent drop-shadow-lg">
-                        {stat.suffix}
-                      </span>
+                    <div className="stat-card relative w-full h-full bg-slate-900/20 backdrop-blur-sm rounded-xl border border-slate-600/40 hover:border-orange-400/25 transition-all duration-500 hover:bg-slate-900/25 shadow-none hover:shadow-md hover:shadow-orange-500/20 hover:scale-102 flex flex-col justify-center items-center p-2">
+                      <div className="flex items-center gap-1 mb-1">
+                        <Icon className="w-3 h-3 text-orange-400/90" />
+                        <div className="overflow-hidden flex items-baseline">
+                          <span
+                            className="stat-number text-[18px] sm:text-[20px] font-black bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 bg-clip-text text-transparent drop-shadow-lg group-hover:drop-shadow-xl transition-all duration-400 block leading-none"
+                            data-value={stat.number}
+                          >
+                            0
+                          </span>
+                          <span className="text-[18px] sm:text-[20px] font-black bg-gradient-to-r from-orange-400 via-amber-400 to-orange-500 bg-clip-text text-transparent drop-shadow-lg">
+                            {stat.suffix}
+                          </span>
+                        </div>
+                      </div>
+
+                      <p className="text-[8px] sm:text-[9px] uppercase tracking-wider font-semibold text-slate-400 group-hover:text-slate-300 transition-all duration-400 text-center leading-tight px-0.5">
+                        {stat.label}
+                      </p>
+
+                      <div className="absolute bottom-1 left-1.5 right-1.5 h-[1px] bg-gradient-to-r from-orange-400/40 to-amber-400/40 rounded-full scale-x-0 origin-center opacity-0 group-hover:opacity-100 group-hover:scale-x-100 transition-all duration-700" />
                     </div>
-
-                    <p className="text-[8px] md:text-[9px] uppercase tracking-wider font-semibold text-slate-300 group-hover:text-slate-100 transition-all duration-400 text-center leading-tight px-0.5">
-                      {stat.label}
-                    </p>
-
-                    <div className="absolute bottom-1 left-1.5 right-1.5 h-[1.5px] bg-gradient-to-r from-orange-400/60 to-amber-400/60 rounded-full scale-x-0 origin-center opacity-0 group-hover:opacity-100 group-hover:scale-x-100 transition-all duration-700" />
                   </div>
-                </div>
-              ))}
+                );
+              })}
 
-              <div className="absolute -right-1.5 -top-1.5 w-3.5 h-3.5 bg-orange-400/50 rounded-full blur-sm opacity-70" />
-              <div className="absolute -right-1.5 -bottom-1.5 w-2.5 h-2.5 bg-amber-400/50 rounded-full blur-sm opacity-60" />
+              <div className="absolute -right-1.5 -top-1.5 w-3 h-3 bg-orange-400/40 rounded-full blur-sm" />
+              <div className="absolute -right-1.5 -bottom-1.5 w-2 h-2 bg-amber-400/40 rounded-full blur-sm" />
             </div>
           </div>
         </div>
