@@ -106,12 +106,13 @@ const Footer = () => {
                 <div>
                   <p className="font-medium text-white mb-1">Adresse</p>
                   <p className="text-white/70 text-sm leading-relaxed">
-                    Madagascar
+                    Madagascar 
                   </p>
                 </div>
               </div>
             </div>
           </div>
+
 
           {/* Bas de footer */}
           <div className="border-t border-white/10 mt-10 pt-6 text-center space-y-2 animate-fade-in-up delay-300">
