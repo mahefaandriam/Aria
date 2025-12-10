@@ -85,7 +85,7 @@ const ServicesSection = () => {
           <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-64 h-64 bg-orange-600/25 blur-3xl rounded-full" />
         </div>
 
-        
+
 
         <div className="container mx-auto px-6 relative z-10">
           <div className="text-center mb-16">
