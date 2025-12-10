@@ -93,7 +93,7 @@ const ServicesSection = () => {
               Notre approche
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-orange-200 to-orange-500 mb-4 animate-fadeIn">
-              Pourquoi ces projets nous différencient ?
+              Nos valeurs 
             </h2>
           </div>
 
@@ -162,7 +162,7 @@ const ServicesSection = () => {
                       </h3>
                     </div>
                     <p className="text-gray-100/90 text-sm leading-relaxed">
-                      Sites rapides et réactifs avec des interfaces intuitives et accessibles.
+                      Sites rapides et logiciels avec des interfaces intuitives et accessibles.
                     </p>
                   </div>
                 </TiltCard>
