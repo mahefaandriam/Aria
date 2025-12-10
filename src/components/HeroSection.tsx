@@ -522,7 +522,7 @@ const HeroSection = () => {
               </div>
             </div>
 
-            {/* ✅ STATS MOBILE HORIZONTAL - Animation automatique en boucle (séquentielle) */}
+            {/* ✅ STAT MOBILE HORIZONTAL - Animation automatique en boucle (séquentielle) */}
             <div className="stats-mobile lg:hidden flex flex-row items-center justify-center gap-4 w-full h-[110px] p-3 mt-6">
               {statsData.map((stat, index) => (
                 <div
