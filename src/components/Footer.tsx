@@ -99,14 +99,14 @@ const Footer = () => {
                 </div>
                 <div>
                   <p className="font-medium text-white mb-1">Téléphone</p>
-                  <p className="text-white/80">+262 693 52 16 26</p>
+                  <p className="text-white/80">+261 32 03 682 18</p> 
+                  <p className="text-white/80">+261 34 17 533 02</p>
+                  <p className="text-white/80">+261 34 07 042 09</p>
                 </div>
                 <div>
                   <p className="font-medium text-white mb-1">Adresse</p>
                   <p className="text-white/70 text-sm leading-relaxed">
-                    ................
-                    <br />
-                    Antananarivo, Madagascar
+                    Madagascar
                   </p>
                 </div>
               </div>
