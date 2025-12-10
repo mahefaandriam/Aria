@@ -512,7 +512,7 @@ const Header = () => {
               </button>
             </div>
 
-            {/* Icônes + burger mobile - ESPACEMENT MAXIMUM */}
+            {/* Icône + burger mobile - ESPACEMENT MAXIMUM */}
             <div className="lg:hidden flex items-center space-x-14">
               {" "}
               {/* space-x-4 → space-x-6 */}
