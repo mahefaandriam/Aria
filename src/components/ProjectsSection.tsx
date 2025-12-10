@@ -27,7 +27,7 @@ const ProjectsSection = () => {
         if (clientProjects.length > 0) {
           setProjects(clientProjects);
         }
-      } catch (error) {
+      } catch {
         console.error("Erreur lors du chargement des projets");
       } finally {
         setIsLoading(false);
@@ -37,137 +37,183 @@ const ProjectsSection = () => {
   }, []);
 
   useEffect(() => {
-    if (!sectionRef.current) return;
+  if (!sectionRef.current || projects.length === 0) return;
 
-    const ctx = gsap.context(() => {
-      // Animation globale de la section
-      gsap.from(sectionRef.current, {
-        opacity: 0,
-        y: 60,
-        duration: 1,
-        ease: "power3.out",
+  const ctx = gsap.context(() => {
+    // Animation globale de la section
+    gsap.from(sectionRef.current, {
+      opacity: 0,
+      scale: 0.95,
+      filter: "blur(10px)",
+      duration: 1.8,
+      ease: "power4.out",
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top 85%",
+      },
+    });
+
+    // Ligne d'arrivée
+    if (linesRef.current) {
+      gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top 80%",
-        },
-      });
+        }
+      })
+      .fromTo(
+        linesRef.current,
+        { scaleX: 0.8, xPercent: -30, opacity: 0, rotation: -5 },
+        { scaleX: 1.1, xPercent: 0, opacity: 0.4, rotation: 0, duration: 1.5, ease: "elastic.out(1, 0.4)" }
+      )
+      .to(linesRef.current, {
+        scaleX: 1,
+        opacity: 0.35,
+        duration: 0.8,
+        ease: "power2.out"
+      }, "-=0.5");
+    }
 
-      // Animation du fond "ligne d'arrivée"
-      if (linesRef.current) {
-        gsap.fromTo(
-          linesRef.current,
-          { xPercent: -20, opacity: 0 },
-          {
-            xPercent: 0,
-            opacity: 0.35,
-            duration: 1.5,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: "top 80%",
-            },
-          }
-        );
-      }
+    // ✨ MESMERIZING CARDS EFFECTS ✨
+    if (cardsWrapperRef.current) {
+      const cards = cardsWrapperRef.current.querySelectorAll(".project-card-outer");
 
-      // Animation des cards (wrapper)
-      if (cardsWrapperRef.current) {
-        const cards = cardsWrapperRef.current.querySelectorAll(".project-card-outer");
-        gsap.from(cards, {
-          opacity: 0,
-          y: 40,
-          scale: 0.98,
-          stagger: 0.12,
-          duration: 0.9,
-          ease: "power3.out",
+      cards.forEach((card, index) => {
+        gsap.timeline({
           scrollTrigger: {
-            trigger: cardsWrapperRef.current,
-            start: "top 75%",
+            trigger: card,
+            start: "top 90%",
+            end: "bottom 30%",
+            scrub: 1.2,
+            toggleActions: "play pause resume reset",
+          }
+        })
+        // Phase 1: apparition
+        .fromTo(
+          card,
+          {
+            opacity: 0,
+            y: 120,
+            scale: 0.7,
+            rotationX: 90,
+            rotationY: index % 2 === 0 ? -20 : 20,
+            filter: "brightness(0.3) blur(8px)"
           },
-        });
-      }
-    }, sectionRef);
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1.02,
+            rotationX: 0,
+            rotationY: 0,
+            filter: "brightness(1.1) blur(0px)",
+            duration: 1.5,
+            ease: "power4.out"
+          },
+          0
+        )
+        // Phase 2: flottement
+        .to(card, {
+          y: -15,
+          scale: 1,
+          rotation: index % 2 === 0 ? 1 : -1,
+          ease: "power2.inOut",
+          duration: 2.5,
+          repeat: -1,
+          yoyo: true
+        }, 0.8)
+        // Phase 3: glow
+        .to(card, {
+          boxShadow: "0 25px 100px rgba(249,115,22,0.6)",
+          scale: 1.03,
+          duration: 2,
+          ease: "power2.out"
+        }, 1.2)
+        // Phase 4: stabilisation
+        .to(card, {
+          y: 0,
+          rotation: 0,
+          scale: 1,
+          boxShadow: "0 24px 80px rgba(15,23,42,0.9)",
+          duration: 1.5,
+          ease: "elastic.out(1, 0.3)"
+        }, 2);
+      });
+    }
+  }, sectionRef);
 
-    return () => ctx.revert();
-  }, [projects.length]);
+  return () => ctx.revert();
+}, [projects.length]);
 
   return (
     <section
       ref={(el) => {
         sectionRef.current = el;
         if (typeof elementRef === "function") elementRef(el);
-        else if (elementRef) (elementRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+        else if (elementRef)
+          (elementRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
       }}
       id="realisations"
-      className="py-24 bg-gradient-to-br from-gray-950 via-black to-slate-950 relative overflow-hidden"
+      className="py-24 bg-gradient-to-br from-gray-900 via-gray-850 to-gray-950 relative overflow-hidden"
     >
-      {/* Background décoratif global */}
+      {/* Fond lumineux subtil */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute -top-32 -left-24 w-96 h-96 bg-orange-500/30 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-[26rem] h-[26rem] bg-orange-400/25 rounded-full blur-3xl" />
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-64 h-64 bg-orange-600/20 rounded-full blur-3xl" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(249,115,22,0.25),transparent_55%),radial-gradient(circle_at_bottom,_rgba(15,23,42,0.9),#020617)] mix-blend-soft-light opacity-70" />
+        <div className="absolute -top-32 -left-24 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-[26rem] h-[26rem] bg-orange-400/15 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-64 h-64 bg-orange-300/15 rounded-full blur-3xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(249,115,22,0.1),transparent_60%),radial-gradient(circle_at_bottom,_rgba(15,23,42,0.95),_#0f172a)] mix-blend-soft-light opacity-60" />
       </div>
 
-      {/* Ligne d'arrivée (fond rayé derrière la grille) */}
+      {/* Ligne décorative */}
       <div
         ref={linesRef}
-        className="pointer-events-none absolute inset-x-0 top-56 bottom-10 flex items-center justify-center opacity-30"
+        className="pointer-events-none absolute inset-x-0 top-56 bottom-10 flex items-center justify-center opacity-25"
       >
         <div className="relative w-[120%] max-w-6xl h-56">
-          {/* Bande principale */}
           <div className="absolute inset-y-6 left-1/2 -translate-x-1/2 w-full">
-            <div
-              className="w-full h-full bg-[repeating-linear-gradient(135deg,_rgba(248,250,252,0.08)_0px,_rgba(248,250,252,0.08)_12px,_rgba(15,23,42,0.3)_12px,_rgba(15,23,42,0.3)_24px)] rounded-3xl border border-orange-400/40 shadow-[0_0_80px_rgba(249,115,22,0.45)]"
-            />
+            <div className="w-full h-full bg-[repeating-linear-gradient(135deg,_rgba(255,255,255,0.05)_0px,_rgba(255,255,255,0.05)_12px,_rgba(249,115,22,0.08)_12px,_rgba(249,115,22,0.08)_24px)] rounded-3xl border border-orange-300/30 shadow-[0_0_80px_rgba(249,115,22,0.3)] backdrop-blur-md" />
           </div>
-
-          {/* Fading top & bottom */}
-          <div className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-slate-950 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-slate-950 to-transparent" />
         </div>
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        {/* Header section */}
+        {/* Header */}
         <div
           className={`text-center mb-16 max-w-4xl mx-auto transform transition-all duration-700 ${
             isVisible ? "animate-fade-in-down" : "opacity-0 translate-y-10"
           }`}
         >
-          <span className="inline-flex items-center px-4 py-1 mb-4 rounded-full border border-orange-500/30 bg-orange-500/10 text-xs font-medium uppercase tracking-[0.2em] text-orange-300">
+          <span className="inline-flex items-center px-4 py-1 mb-4 rounded-full border border-orange-400/40 bg-orange-500/10 text-xs font-medium uppercase tracking-[0.2em] text-orange-200">
             Portefeuille
           </span>
 
-          <h2 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-orange-300 to-orange-500 mb-6 drop-shadow-[0_0_25px_rgba(249,115,22,0.55)]">
+          <h2 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-300 via-orange-200 to-orange-400 mb-6 drop-shadow-[0_0_40px_rgba(249,115,22,0.3)]">
             NOS RÉALISATIONS
           </h2>
 
-          <p className="text-lg md:text-xl text-gray-300/90 leading-relaxed">
+          <p className="text-lg md:text-xl text-gray-300/90 leading-relaxed bg-gray-800/50 backdrop-blur-md px-8 py-4 rounded-2xl border border-orange-400/20 shadow-md">
             Laissez-vous inspirer par ces histoires de transformation digitale réussie.
             Chaque projet reflète notre engagement à comprendre les enjeux spécifiques
             de chaque secteur et à concevoir des solutions sur mesure.
           </p>
         </div>
 
-        {/* Loader / Empty / Grid */}
+        {/* Loader / Carte */}
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="relative mb-4">
-              <div className="w-16 h-16 rounded-full border-t-2 border-b-2 border-orange-500 animate-spin" />
-              <div className="absolute inset-2 rounded-full border border-orange-500/20" />
+              <div className="w-20 h-20 rounded-full border-t-4 border-b-4 border-orange-400 bg-orange-300/20 animate-spin shadow-lg shadow-orange-400/20" />
             </div>
-            <span className="text-gray-300 text-sm uppercase tracking-[0.25em]">
+            <span className="text-orange-300 text-lg font-medium uppercase tracking-[0.25em]">
               Chargement des projets...
             </span>
           </div>
         ) : projects.length === 0 ? (
           <div className="text-center py-20">
-            <div className="text-6xl mb-4">🚧</div>
+            <div className="text-6xl mb-4 animate-bounce">🚧</div>
             <h3 className="text-2xl font-bold text-gray-100 mb-2">
               Aucun projet publié
             </h3>
-            <p className="text-gray-400">
+            <p className="text-gray-400 bg-gray-800/40 px-8 py-4 rounded-xl border border-orange-400/20">
               Les projets créés dans le dashboard admin avec le statut "Terminé" apparaitront ici.
             </p>
           </div>
@@ -182,43 +228,21 @@ const ProjectsSection = () => {
             {projects.map((project, index) => (
               <div
                 key={`${project.title}-${index}`}
-                className={`
-                  project-card-outer group transform transition-all duration-500 
-                  ${visibleItems.has(index) ? "animate-fade-in-up" : "opacity-0 translate-y-10"}
-                `}
+                className={`project-card-outer group transform transition-all duration-500 ${
+                  visibleItems.has(index) ? "animate-fade-in-up" : ""
+                } overflow-hidden relative`}
                 style={{ animationDelay: `${index * 150}ms` }}
               >
-                <div className="h-full rounded-2xl bg-slate-900/40 backdrop-blur-xl shadow-[0_24px_80px_rgba(15,23,42,0.9)] hover:shadow-[0_28px_95px_rgba(249,115,22,0.5)] transition-shadow duration-300 overflow-hidden">
-  <div className="h-full flex flex-col">
-    <div className="relative">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(249,115,22,0.22),transparent_60%)] opacity-70 pointer-events-none" />
-    </div>
-    <div className="p-5 sm:p-6 h-full flex flex-col">
-      <ProjectCard {...project} />
-    </div>
-  </div>
-</div>
-
+                <div className="h-full rounded-3xl bg-gradient-to-br from-gray-800/60 to-slate-900/50 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] hover:shadow-[0_25px_80px_rgba(249,115,22,0.4)] transition-all duration-500 group-hover:scale-[1.02] border border-orange-400/25 hover:border-orange-300/40 overflow-hidden relative">
+                  <div className="absolute inset-0 bg-gradient-to-t from-orange-400/5 via-transparent to-orange-400/5" />
+                  <div className="h-full flex flex-col relative z-10">
+                    <div className="p-6 lg:p-8 h-full flex flex-col">
+                      <ProjectCard {...project} />
+                    </div>
+                  </div>
+                </div>
               </div>
             ))}
-          </div>
-        )}
-
-        {/* Bloc informatif admin (inchangé, toujours commenté) */}
-        {projects.length > 0 && (
-          <div
-            className={`text-center mt-12 transform transition-all duration-700 ${
-              isVisible ? "animate-fade-in-up" : "opacity-0 translate-y-10"
-            }`}
-          >
-            {/* 
-            <div className="bg-gradient-to-r from-orange-500/10 to-orange-600/10 backdrop-blur-xl p-6 rounded-2xl border border-orange-500/30 max-w-2xl mx-auto">
-              <p className="text-gray-300 text-sm">
-                📝 <strong>Pour les administrateurs :</strong> Ces projets sont automatiquement synchronisés
-                depuis l'API backend. Seuls les projets avec le statut "Terminé" sont affichés ici.
-              </p>
-            </div>
-            */}
           </div>
         )}
       </div>

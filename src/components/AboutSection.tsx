@@ -204,7 +204,7 @@ const AboutSection = () => {
         }
       `}</style>
 
-      <section id="about" className="pt-16 pb-24 bg-gray-950 relative overflow-hidden">
+      <section id="about" className="pt-16 pb-24 bg-gray-100 relative overflow-hidden">
         {/* Vidéo de fond principale */}
         <video
           ref={videoRef}
@@ -247,7 +247,7 @@ const AboutSection = () => {
                 </video>
 
                 {/* Overlay interne */}
-                <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-black/80" />
+                {/* <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-black/80" /> */}
 
                 {/* Contenu */}
                 <div className="relative z-10 px-6 sm:px-10 py-10 sm:py-12 space-y-10">

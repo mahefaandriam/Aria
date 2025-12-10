@@ -1,4 +1,53 @@
-import React from 'react';
+import React, { useRef } from 'react';
+
+const TiltCard = ({ children }) => {
+  const cardRef = useRef(null);
+
+  const handleMouseMove = (e) => {
+    const card = cardRef.current;
+    if (!card) return;
+
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const midX = rect.width / 2;
+    const midY = rect.height / 2;
+
+    const rotateX = ((y - midY) / midY) * -10;
+    const rotateY = ((x - midX) / midX) * 10;
+
+    card.style.transform = `
+      perspective(900px)
+      rotateX(${rotateX}deg)
+      rotateY(${rotateY}deg)
+      translateZ(0)
+    `;
+  };
+
+  const handleMouseLeave = () => {
+    const card = cardRef.current;
+    if (!card) return;
+    card.style.transform = `
+      perspective(900px)
+      rotateX(0deg)
+      rotateY(0deg)
+      translateZ(0)
+    `;
+  };
+
+  return (
+    <div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="transition-transform duration-200 will-change-transform"
+      style={{ transformStyle: 'preserve-3d' }}
+    >
+      {children}
+    </div>
+  );
+};
 
 const ServicesSection = () => {
   return (
@@ -67,84 +116,92 @@ const ServicesSection = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Colonne gauche */}
               <div className="space-y-8">
-                <div className="bg-slate-900/85 backdrop-blur-xl p-8 rounded-2xl border border-slate-700/80 hover:border-orange-500 hover:shadow-[0_24px_70px_rgba(249,115,22,0.55)] transition-all duration-300 animate-fadeIn delay-100">
-                  <img
-                    src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                    alt="Approche sur mesure"
-                    className="service-image"
-                  />
-                  <div className="flex items-center mb-4">
-                    <div className="bg-orange-500/20 w-11 h-11 rounded-full flex items-center justify-center mr-4 shadow-[0_0_15px_rgba(249,115,22,0.6)]">
-                      <span className="text-orange-300 text-xl font-bold">1</span>
+                <TiltCard>
+                  <div className="bg-slate-900/85 backdrop-blur-xl p-8 rounded-2xl border border-slate-700/80 hover:border-orange-500 hover:shadow-[0_24px_70px_rgba(249,115,22,0.55)] transition-all duration-300 animate-fadeIn delay-100">
+                    <img
+                      src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                      alt="Approche sur mesure"
+                      className="service-image"
+                    />
+                    <div className="flex items-center mb-4">
+                      <div className="bg-orange-500/20 w-11 h-11 rounded-full flex items-center justify-center mr-4 shadow-[0_0_15px_rgba(249,115,22,0.6)]">
+                        <span className="text-orange-300 text-xl font-bold">1</span>
+                      </div>
+                      <h3 className="text-xl font-bold text-orange-200">
+                        Approche sur mesure
+                      </h3>
                     </div>
-                    <h3 className="text-xl font-bold text-orange-200">
-                      Approche sur mesure
-                    </h3>
+                    <p className="text-gray-100/90 text-sm leading-relaxed">
+                      Chaque industrie a ses particularités. Nous adaptons nos solutions aux besoins spécifiques de chaque secteur.
+                    </p>
                   </div>
-                  <p className="text-gray-100/90 text-sm leading-relaxed">
-                    Chaque industrie a ses particularités. Nous adaptons nos solutions aux besoins spécifiques de chaque secteur.
-                  </p>
-                </div>
+                </TiltCard>
 
-                <div className="bg-slate-900/85 backdrop-blur-xl p-8 rounded-2xl border border-slate-700/80 hover:border-orange-500 hover:shadow-[0_24px_70px_rgba(249,115,22,0.55)] transition-all duration-300 animate-fadeIn delay-200">
-                  <img
-                    src="https://images.unsplash.com/photo-1581287053822-fd7bf4f4bfec?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                    alt="Qualité visuelle et technique"
-                    className="service-image"
-                  />
-                  <div className="flex items-center mb-4">
-                    <div className="bg-orange-500/20 w-11 h-11 rounded-full flex items-center justify-center mr-4 shadow-[0_0_15px_rgba(249,115,22,0.6)]">
-                      <span className="text-orange-300 text-xl font-bold">2</span>
+                <TiltCard>
+                  <div className="bg-slate-900/85 backdrop-blur-xl p-8 rounded-2xl border border-slate-700/80 hover:border-orange-500 hover:shadow-[0_24px_70px_rgba(249,115,22,0.55)] transition-all duration-300 animate-fadeIn delay-200">
+                    <img
+                      src="https://images.unsplash.com/photo-1581287053822-fd7bf4f4bfec?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                      alt="Qualité visuelle et technique"
+                      className="service-image"
+                    />
+                    <div className="flex items-center mb-4">
+                      <div className="bg-orange-500/20 w-11 h-11 rounded-full flex items-center justify-center mr-4 shadow-[0_0_15px_rgba(249,115,22,0.6)]">
+                        <span className="text-orange-300 text-xl font-bold">2</span>
+                      </div>
+                      <h3 className="text-xl font-bold text-orange-200">
+                        Qualité visuelle et technique
+                      </h3>
                     </div>
-                    <h3 className="text-xl font-bold text-orange-200">
-                      Qualité visuelle et technique
-                    </h3>
+                    <p className="text-gray-100/90 text-sm leading-relaxed">
+                      Produits esthétiquement plaisants et techniquement robustes pour une expérience exceptionnelle.
+                    </p>
                   </div>
-                  <p className="text-gray-100/90 text-sm leading-relaxed">
-                    Produits esthétiquement plaisants et techniquement robustes pour une expérience exceptionnelle.
-                  </p>
-                </div>
+                </TiltCard>
               </div>
 
               {/* Colonne droite */}
               <div className="space-y-8">
-                <div className="bg-slate-900/85 backdrop-blur-xl p-8 rounded-2xl border border-slate-700/80 hover:border-orange-500 hover:shadow-[0_24px_70px_rgba(249,115,22,0.55)] transition-all duration-300 animate-fadeIn delay-300">
-                  <img
-                    src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2015&q=80"
-                    alt="Performance optimale"
-                    className="service-image"
-                  />
-                  <div className="flex items-center mb-4">
-                    <div className="bg-orange-500/20 w-11 h-11 rounded-full flex items-center justify-center mr-4 shadow-[0_0_15px_rgba(249,115,22,0.6)]">
-                      <span className="text-orange-300 text-xl font-bold">3</span>
+                <TiltCard>
+                  <div className="bg-slate-900/85 backdrop-blur-xl p-8 rounded-2xl border border-slate-700/80 hover:border-orange-500 hover:shadow-[0_24px_70px_rgba(249,115,22,0.55)] transition-all duration-300 animate-fadeIn delay-300">
+                    <img
+                      src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2015&q=80"
+                      alt="Performance optimale"
+                      className="service-image"
+                    />
+                    <div className="flex items-center mb-4">
+                      <div className="bg-orange-500/20 w-11 h-11 rounded-full flex items-center justify-center mr-4 shadow-[0_0_15px_rgba(249,115,22,0.6)]">
+                        <span className="text-orange-300 text-xl font-bold">3</span>
+                      </div>
+                      <h3 className="text-xl font-bold text-orange-200">
+                        Performance optimale
+                      </h3>
                     </div>
-                    <h3 className="text-xl font-bold text-orange-200">
-                      Performance optimale
-                    </h3>
+                    <p className="text-gray-100/90 text-sm leading-relaxed">
+                      Sites rapides et réactifs avec des interfaces intuitives et accessibles.
+                    </p>
                   </div>
-                  <p className="text-gray-100/90 text-sm leading-relaxed">
-                    Sites rapides et réactifs avec des interfaces intuitives et accessibles.
-                  </p>
-                </div>
+                </TiltCard>
 
-                <div className="bg-slate-900/85 backdrop-blur-xl p-8 rounded-2xl border border-slate-700/80 hover:border-orange-500 hover:shadow-[0_24px_70px_rgba(249,115,22,0.55)] transition-all duration-300 animate-fadeIn delay-400">
-                  <img
-                    src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                    alt="Collaboration étroite"
-                    className="service-image"
-                  />
-                  <div className="flex items-center mb-4">
-                    <div className="bg-orange-500/20 w-11 h-11 rounded-full flex items-center justify-center mr-4 shadow-[0_0_15px_rgba(249,115,22,0.6)]">
-                      <span className="text-orange-300 text-xl font-bold">4</span>
+                <TiltCard>
+                  <div className="bg-slate-900/85 backdrop-blur-xl p-8 rounded-2xl border border-slate-700/80 hover:border-orange-500 hover:shadow-[0_24px_70px_rgba(249,115,22,0.55)] transition-all duration-300 animate-fadeIn delay-400">
+                    <img
+                      src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
+                      alt="Collaboration étroite"
+                      className="service-image"
+                    />
+                    <div className="flex items-center mb-4">
+                      <div className="bg-orange-500/20 w-11 h-11 rounded-full flex items-center justify-center mr-4 shadow-[0_0_15px_rgba(249,115,22,0.6)]">
+                        <span className="text-orange-300 text-xl font-bold">4</span>
+                      </div>
+                      <h3 className="text-xl font-bold text-orange-200">
+                        Collaboration étroite
+                      </h3>
                     </div>
-                    <h3 className="text-xl font-bold text-orange-200">
-                      Collaboration étroite
-                    </h3>
+                    <p className="text-gray-100/90 text-sm leading-relaxed">
+                      Nous travaillons en étroite collaboration avec nos clients pour maximiser leur ROI.
+                    </p>
                   </div>
-                  <p className="text-gray-100/90 text-sm leading-relaxed">
-                    Nous travaillons en étroite collaboration avec nos clients pour maximiser leur ROI.
-                  </p>
-                </div>
+                </TiltCard>
               </div>
             </div>
           </div>
