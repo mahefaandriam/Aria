@@ -817,7 +817,7 @@ const HeroSection = () => {
                     >
                       <div className="absolute inset-0 bg-gradient-to-r from-orange-400/15 to-amber-400/25 rounded-xl -z-10 scale-0 group-hover:scale-100 blur-sm transition-all duration-700" />
 
-                      <div className="stat-card relative bg-slate-900/25 backdrop-blur-sm rounded-xl p-4 border border-slate-600/40 hover:border-orange-400/25 transition-all duration-500 hover:bg-slate-900/30 shadow-none hover:shadow-md hover:shadow-orange-500/20 hover:scale-[1.01]">
+                      <div className="stat-card relative bg-slate-500/5 backdrop-blur-sm rounded-xl p-4 border border-slate-700/40 hover:border-orange-400/25 transition-all duration-500 hover:bg-slate-900/30 shadow-none hover:shadow-md hover:shadow-orange-500/20 hover:scale-[1.01]">
                         <div className="flex items-center gap-2 mb-2">
                           <Icon className="w-4 h-4 text-orange-400/90" />
                           <div className="overflow-hidden flex items-baseline">
