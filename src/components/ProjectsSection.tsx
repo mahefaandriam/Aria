@@ -53,92 +53,77 @@ const ProjectsSection = () => {
       },
     });
 
-    // Ligne d'arrivée
-    if (linesRef.current) {
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 80%",
-        }
-      })
-      .fromTo(
-        linesRef.current,
-        { scaleX: 0.8, xPercent: -30, opacity: 0, rotation: -5 },
-        { scaleX: 1.1, xPercent: 0, opacity: 0.4, rotation: 0, duration: 1.5, ease: "elastic.out(1, 0.4)" }
-      )
-      .to(linesRef.current, {
-        scaleX: 1,
-        opacity: 0.35,
-        duration: 0.8,
-        ease: "power2.out"
-      }, "-=0.5");
-    }
+    
 
     // ✨ MESMERIZING CARDS EFFECTS ✨
-    if (cardsWrapperRef.current) {
-      const cards = cardsWrapperRef.current.querySelectorAll(".project-card-outer");
+   if (cardsWrapperRef.current) {
+  const cards = cardsWrapperRef.current.querySelectorAll(".project-card-outer");
 
-      cards.forEach((card, index) => {
-        gsap.timeline({
-          scrollTrigger: {
-            trigger: card,
-            start: "top 90%",
-            end: "bottom 30%",
-            scrub: 1.2,
-            toggleActions: "play pause resume reset",
-          }
-        })
-        // Phase 1: apparition
-        .fromTo(
-          card,
-          {
-            opacity: 0,
-            y: 120,
-            scale: 0.7,
-            rotationX: 90,
-            rotationY: index % 2 === 0 ? -20 : 20,
-            filter: "brightness(0.3) blur(8px)"
-          },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1.02,
-            rotationX: 0,
-            rotationY: 0,
-            filter: "brightness(1.1) blur(0px)",
-            duration: 1.5,
-            ease: "power4.out"
-          },
-          0
-        )
-        // Phase 2: flottement
-        .to(card, {
-          y: -15,
-          scale: 1,
-          rotation: index % 2 === 0 ? 1 : -1,
-          ease: "power2.inOut",
-          duration: 2.5,
-          repeat: -1,
-          yoyo: true
-        }, 0.8)
-        // Phase 3: glow
-        .to(card, {
-          boxShadow: "0 25px 100px rgba(249,115,22,0.6)",
-          scale: 1.03,
-          duration: 2,
-          ease: "power2.out"
-        }, 1.2)
-        // Phase 4: stabilisation
-        .to(card, {
-          y: 0,
-          rotation: 0,
-          scale: 1,
-          boxShadow: "0 24px 80px rgba(15,23,42,0.9)",
-          duration: 1.5,
-          ease: "elastic.out(1, 0.3)"
-        }, 2);
-      });
-    }
+  cards.forEach((card, index) => {
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: card,
+        start: "top 90%",
+        end: "bottom 30%",
+        scrub: 1.2,
+        toggleActions: "play pause resume reset",
+      }
+    })
+    // Phase 1: flottement TRÈS LENT d'abord (card déjà visible)
+    .to(card, {
+      y: -25,
+      scale: 1,
+      rotation: index % 2 === 0 ? 2 : -2,
+      ease: "power2.inOut",
+      duration: 6,        // flottement très lent
+      repeat: 3,          // répète plusieurs fois
+      yoyo: true
+    }, 0)
+    
+    // Phase 2: glow pendant le flottement
+    .to(card, {
+      scale: 1.04,
+      duration: 4,
+      ease: "power2.out"
+    }, 0.5)
+    
+    // Phase 3: APPARITION LENTE (arrive APRÈS flottement)
+    .fromTo(
+      card,
+      {
+        opacity: 0.3,
+        y: 80,
+        scale: 0.85,
+        rotationX: 45,
+        rotationY: index % 2 === 0 ? -15 : 15,
+        filter: "brightness(0.4) blur(6px)"
+      },
+      {
+        opacity: 1,
+        y: 0,
+        scale: 1.02,
+        rotationX: 0,
+        rotationY: 0,
+        filter: "brightness(1.1) blur(0px)",
+        duration: 2.5,      // apparition lente
+        ease: "power4.out"
+      },
+      3.5          // ← DÉCALAGE : apparition commence APRÈS 3.5s de flottement
+    )
+    
+    // Phase 4: stabilisation finale
+    .to(card, {
+      y: 0,
+      rotation: 0,
+      scale: 1,
+      boxShadow: "0 24px 80px rgba(15,23,42,0.9)",
+      duration: 2,
+      ease: "elastic.out(1, 0.3)"
+    }, 7);          // stabilisation très en fin de timeline
+  });
+}
+
+
   }, sectionRef);
 
   return () => ctx.revert();
