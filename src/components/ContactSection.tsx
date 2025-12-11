@@ -284,7 +284,11 @@ const ContactSection = () => {
     {
       icon: Phone,
       title: "Téléphone",
-      content: "+262 693 52 16 26",
+      content: [
+        "+261 32 03 682 18",
+        "+261 34 17 533 02",
+        "+261 34 07 042 09",
+      ],
       description: "Lun-Ven 9h-18h"
     },
     {
@@ -366,7 +370,15 @@ const ContactSection = () => {
                       <h4 className="font-semibold text-white mb-1 group-hover:text-orange-300 transition-colors">
                         {info.title}
                       </h4>
-                      <p className="text-orange-400 font-medium mb-1">{info.content}</p>
+                      {/* Gestion string ou array pour le contenu */}
+                      <div className="text-orange-300 font-medium text-sm mb-1">
+                        {Array.isArray(info.content)
+                          ? info.content.map((line, i) => (
+                              <p key={i}>{line}</p>
+                            ))
+                          : <p>{info.content}</p>}
+                      </div>
+                       {/*<p className="text-orange-400 font-medium mb-1">{info.content}</p> */}
                       <p className="text-gray-400 text-sm">{info.description}</p>
                     </div>
                   </div>
