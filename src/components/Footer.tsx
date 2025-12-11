@@ -46,7 +46,7 @@ const Footer = () => {
 
             {/* Contact Info */}
             <div>
-              <h4 className="text-lg font-semibold mb-4 text-orange-500">Contact</h4>
+              <h4 className="text-lg font-semibold mb-4 text-orange-500">Nos Contacts</h4>
               <div className="space-y-3 text-white/80">
                 <div>
                   <p className="font-medium text-white">Email</p>
@@ -58,7 +58,7 @@ const Footer = () => {
                 </div>
                 <div>
                   <p className="font-medium text-white">Adresse</p>
-                  <p>................<br />Antananarivo, Madagascar</p>
+                  <p>................<br />Madagascar</p>
                 </div>
               </div>
             </div>
